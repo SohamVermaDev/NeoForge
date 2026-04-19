@@ -1,0 +1,56 @@
+:root {
+    --main-background-color: #111111; /*#0F0F0F*/
+    --card-background-color: #1E1E1E; /*#1A1A1A*/
+    --divider-color: #2A2A2A;
+    --primary-text-color: #EDEDED;
+    --primary-text-selection-background-color: rgba(59, 130, 246, 0.5);
+    --secondary-text-color: #A0A0A0;
+    --secondary-text-selection-background-color: rgba(59, 130, 246, 0.35);
+    --accent-color: #3B82F6;
+    --accent-hover-color: #2563EB;
+    --active-tab-background-color: #2A2A2A;
+    --sidebar-background-color: #121212;
+
+    --success-color: #10B981;
+    --success-background-color: rgba(16, 185, 129, 0.15);
+    --success-border-color: rgba(16, 185, 129, 0.3);
+    --warning-color: #F59E0B;
+    --warning-background-color: rgba(245, 158, 11, 0.15);
+    --warning-border-color: rgba(245, 158, 11, 0.3);
+    --error-color: #EF4444;
+    --error-background-color: rgba(239, 68, 68, 0.15);
+    --error-border-color: rgba(239, 68, 68, 0.3);
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    background-color: var(--main-background-color);
+    overflow-x: hidden;
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+
+::-webkit-scrollbar-track {
+    background: var(--sidebar-background-color);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: rgba(59, 130, 246, 0.4);
+    border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-color);
+}
+
+::-webkit-scrollbar-corner {
+    background: var(--sidebar-background-color);
+}

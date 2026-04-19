@@ -1,0 +1,45 @@
+main {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem 1rem;
+    justify-content: space-evenly;
+    width: auto;
+    margin-left: 17.5rem;
+    transition: all 0.3s ease-in-out;
+}
+
+main .card {
+    /* background-color: var(--black3); */
+    background-color: var(--card-background-color);
+    padding: 1.2rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+main .card h2 {
+    /* color: var(--yellow); */
+    color: var(--primary-text-color);
+    font-weight: 700;
+    font-size: 1.7rem;
+    line-height: 0.75;
+    user-select: text;
+}
+
+main .card h2::selection {
+    /* color: var(--primary-text-selection-color); */
+    /* background: var(--accent-color); */
+    color: var(--primary-text-color);
+    background-color: var(--primary-text-selection-background-color);
+}
+
+main .card p {
+    /* color: var(--text-gray); */
+    color: var(--secondary-text-color);
+    font-size: 1rem;
+}
+
+main .card p::selection {
+    color: var(--primary-text-color);
+    background: var(--secondary-text-selection-background-color);
+}

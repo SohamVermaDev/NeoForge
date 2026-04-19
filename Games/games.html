@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Games</title>
+    <link rel="stylesheet" href="/Universal/universal_styles.css">
+    <link rel="stylesheet" href="/Universal/Sidebar/sidebar.css">
+    <link rel="stylesheet" href="/Games/games.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="heading">
+            <h2>Dashboard</h2>
+            <button><i class="fas fa-bars"></i></button>
+        </div>
+        <hr>
+        <div class="list">
+            <a href="/Dashboard/dashboard.html" class="list_item">
+                <i class="fas fa-home"></i>
+                <p>Dashboard</p>
+            </a>
+            <a href="#" class="list_item">
+                <i class="fa-solid fa-users"></i>
+                <p>Customers</p>
+            </a>
+            <a href="#" class="list_item active">
+                <i class="fa-solid fa-calendar"></i>
+                <p>Games</p>
+            </a>
+            <a href="#" class="list_item">
+                <i class="fa-solid fa-cart-shopping"></i>
+                <p>Orders</p>
+            </a>
+            <a href="#" class="list_item">
+                <i class="fa-solid fa-chart-pie"></i>
+                <p>Reports</p>
+            </a>
+            <a href="#" class="list_item">
+                <i class="fa-solid fa-gear"></i>
+                <p>Settings</p>
+            </a>
+        </div>
+    </div>
+    <div class="table-wrapper">
+        <div class="table-controls">
+            <div class="search-wrapper">
+                <input type="text" placeholder="Search games..." class="search-input">
+                <button class="reset">Reset All Filters</button>
+            </div>
+            <div class="filter-wrapper">
+                <div class="custom-dropdown" id="platform-dropdown">
+                    <button class="dropdown-trigger" id="platform-trigger">
+                        <span class="dropdown-selected-text">All Platforms</span>
+                        <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
+                    </button>
+                    <div class="dropdown-menu" id="platform-filter">
+                        <button class="dropdown-option platform-option active" data-platform="all">All Platforms</button>
+                        <button class="dropdown-option platform-option" data-platform="pc">
+                            <span class="platform-chip pc">PC</span>
+                        </button>
+                        <button class="dropdown-option platform-option" data-platform="ps5">
+                            <span class="platform-chip ps5">PS5</span>
+                        </button>
+                        <button class="dropdown-option platform-option" data-platform="ps4">
+                            <span class="platform-chip ps4">PS4</span>
+                        </button>
+                        <button class="dropdown-option platform-option" data-platform="xsx">
+                            <span class="platform-chip xsx">XSX</span>
+                        </button>
+                        <button class="dropdown-option platform-option" data-platform="nsw">
+                            <span class="platform-chip nsw">NSW</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="custom-dropdown" id="rating-dropdown">
+                    <button class="dropdown-trigger" id="rating-trigger">
+                        <span class="dropdown-selected-text">All Ratings</span>
+                        <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
+                    </button>
+                    <div class="dropdown-menu" id="rating-filter">
+                        <button class="dropdown-option rating-option active" data-rating="all">All Ratings</button>
+                        <button class="dropdown-option rating-option" data-rating="high">High (8.0 &lt;)</button>
+                        <button class="dropdown-option rating-option" data-rating="medium">Medium (6.0 - 7.9)</button>
+                        <button class="dropdown-option rating-option" data-rating="low">Low (&lt; 6.0)</button>
+                    </div>
+                </div>
+                <div class="custom-dropdown" id="status-dropdown">
+                    <button class="dropdown-trigger" id="status-trigger">
+                        <span class="dropdown-selected-text">All Stock</span>
+                        <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
+                    </button>
+                    <div class="dropdown-menu" id="status-filter">
+                        <button class="dropdown-option status-option active" data-status="all">All Stock</button>
+                        <button class="dropdown-option status-option" data-status="instock">
+                            <span class="status-badge in-stock">In Stock</span>
+                        </button>
+                        <button class="dropdown-option status-option" data-status="outofstock">
+                            <span class="status-badge out-of-stock">Out of Stock</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="table-responsive">
+            <table class="game-table">
+                <thead>
+                    <tr>
+                        <th class="sortable" data-sort-type="number" data-column="0">ID <i class="fa-solid fa-arrow-down-short-wide"></i></th>
+                        <th class="sortable" data-sort-type="string" data-column="1">Game Title <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th>Developer/Publisher</th>
+                        <th>Genre</th>
+                        <th class="sortable" data-sort-type="number" data-column="4">Price <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th>Platform</th>
+                        <th class="sortable" data-sort-type="number" data-column="6">Rating <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th class="sortable" data-sort-type="number" data-column="7">Stock Status <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Cyberpunk 2077</td>
+                        <td>CD Projekt Red</td>
+                        <td>RPG</td>
+                        <td>$29.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip nsw">NSW</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">9.5 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge in-stock" stock="257">In Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Hollow Knight</td>
+                        <td>Team17</td>
+                        <td>Metroidvania</td>
+                        <td>$14.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip nsw">NSW</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">7.8 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge low-stock" stock="24">Low Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Elden Ring</td>
+                        <td>FromSoftware</td>
+                        <td>Action RPG</td>
+                        <td>$59.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip ps5">PS5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">8.7 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge out-of-stock" stock="0">Out of Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Stardew Valley</td>
+                        <td>ConcernedApe</td>
+                        <td>Simulation</td>
+                        <td>$9.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip nsw">NSW</span>
+                                <span class="platform-chip ps4">PS4</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">5.9 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge in-stock" stock="189">In Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Among Us</td>
+                        <td>InnerSloth</td>
+                        <td>Party</td>
+                        <td>$4.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip nsw">NSW</span>
+                                <span class="platform-chip ps4">PS4</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">8.5 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge out-of-stock" stock="0">Out of Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Celeste</td>
+                        <td>Team17</td>
+                        <td>Platformer</td>
+                        <td>$19.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip nsw">NSW</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">6.9 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge low-stock" stock="31">Low Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Hades</td>
+                        <td>Team17</td>
+                        <td>Rogue-like</td>
+                        <td>$24.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip nsw">NSW</span>
+                                <span class="platform-chip ps4">PS4</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">9.1 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge in-stock" stock="219">In Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>8</td>
+                        <td>Shovel Knight</td>
+                        <td>Yacht Club Entertainment</td>
+                        <td>Platformer</td>
+                        <td>$29.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">5.8 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge out-of-stock" stock="0">Out of Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>9</td>
+                        <td>Death Stranding</td>
+                        <td>FromSoftware</td>
+                        <td>Action</td>
+                        <td>$49.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip pc">PC</span>
+                                <span class="platform-chip xsx">XSX</span>
+                                <span class="platform-chip ps4">PS4</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">8.7 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge in-stock" stock="199">In Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>10</td>
+                        <td>Ghost of Tsushima</td>
+                        <td>Bandai Namco Entertainment</td>
+                        <td>Action RPG</td>
+                        <td>$59.99</td>
+                        <td>
+                            <div class="platforms">
+                                <span class="platform-chip ps4">PS4</span>
+                                <span class="platform-chip ps5">PS5</span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">6.7 </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill"></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge out-of-stock" stock="0">Out of Stock</span></td>
+                        <td class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="table-footer">
+            <div class="pagination-info">
+                Showing <span id="range-start">1</span>-<span id="range-end">10</span> 
+                of <span id="total-filtered">0</span> games
+            </div>
+            <div class="pagination-controls">
+                <div class="per-page">
+                    <span>Show</span>
+                    <div class="custom-dropdown" id="pagination-dropdown">
+                        <button class="dropdown-trigger" id="pagination-trigger">
+                            <span class="dropdown-selected-text">10</span>
+                            <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
+                        </button>
+                        <div class="dropdown-menu" id="pagination-filter">
+                            <button class="dropdown-option pagination-option active">20</button>
+                            <button class="dropdown-option pagination-option">15</button>
+                            <button class="dropdown-option pagination-option">10</button>
+                            <button class="dropdown-option pagination-option">5</button>
+                        </div>
+                    </div>
+                    <span>per page</span>
+                </div>
+                <button id="prev-page" class="page-btn" disabled>◀</button>
+                <button id="next-page" class="page-btn" disabled>▶</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/Universal/Sidebar/sidebar.js"></script>
+    <script src="/Games/games.js"></script>
+</body>
+</html>

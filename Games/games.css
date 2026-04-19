@@ -1,0 +1,551 @@
+/* Table wrapper for horizontal scroll on small screens */
+.table-wrapper {
+    border-radius: 12px;
+    margin-left: 17.5rem;
+    transition: all 0.3s ease-in-out;
+    padding: 1rem 1rem;
+    position: relative;
+    overflow-x: visible;
+}
+
+.table-wrapper .table-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    gap: 1rem;
+    flex-wrap: wrap;
+    /* position: absolute; */
+    /* width: calc(100vw - 5rem - 1rem); */
+}
+
+.table-wrapper .search-input {
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    padding: 0.6rem 1rem;
+    /* height: 2.25rem; */
+    border-radius: 8px;
+    color: var(--primary-text-color);
+    transition: all 0.3s ease;
+}
+
+.table-wrapper .reset {
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 10px;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    width: max-content;
+    height: 2.25rem;
+    color: var(--primary-text-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.4s ease-in-out;
+    user-select: none;
+}
+
+.table-wrapper .reset:hover {
+    border-color: var(--accent-color);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.table-wrapper .reset:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+.table-wrapper .search-input:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+/* Custom dropdown container */
+.custom-dropdown {
+    position: relative;
+    display: inline-flex;
+}
+
+/* Trigger button – cleaner, no fixed width */
+.dropdown-trigger {
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 10px;
+    padding: 0.5rem 2rem 0.5rem 1rem;
+    /* width: 10rem; */
+    width: max-content;
+    height: 2.25rem;
+    color: var(--primary-text-color);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    transition: all 0.4s ease-in-out;
+    user-select: none;
+}
+
+.dropdown-trigger:hover {
+    border-color: var(--accent-color);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.dropdown-trigger:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+.dropdown-arrow {
+    display: inline-flex;
+    align-items: center;
+    transition: transform 0.2s ease;
+}
+
+.custom-dropdown.open .dropdown-arrow {
+    transform: rotate(-90deg);
+}
+
+/* Floating menu panel */
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    /* width: 8rem; */
+    width: max-content;
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 14px;
+    padding: 0.5rem;
+    z-index: 100;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.98);
+    transition: opacity 0.2s ease;
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
+    backdrop-filter: blur(0px); /* keeps crisp text */
+}
+
+.custom-dropdown.open .dropdown-menu {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Dropdown options – more spacious, with checkmark */
+.dropdown-option {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    margin-bottom: 0.25rem;
+    background: transparent;
+    border: none;
+    border-radius: 10px;
+    color: var(--primary-text-color);
+    font-size: 0.85rem;
+    font-weight: 450;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    text-align: left;
+    gap: 0.5rem;
+    user-select: none;
+}
+
+.dropdown-option:last-child {
+    margin-bottom: 0;
+}
+
+.dropdown-option:hover {
+    background: rgba(59, 130, 246, 0.12);
+}
+
+.dropdown-option:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+/* Active / selected option – subtle checkmark */
+.dropdown-option.active {
+    background: rgba(59, 130, 246, 0.08);
+    color: var(--accent-color);
+}
+
+.dropdown-option.active::after {
+    content: "✓";
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-left: auto;
+    color: var(--accent-color);
+}
+
+/* "All Platforms" special styling */
+.dropdown-option[data-platform="all"] {
+    color: var(--secondary-text-color);
+    font-weight: 400;
+}
+
+.dropdown-option[data-platform="all"]:hover {
+    background: rgba(255,255,255,0.05);
+    color: var(--primary-text-color);
+}
+
+/* ------------------------------------------------------------------------------------------------------ */
+
+.table-responsive {
+    overflow-x: auto;
+    overflow-y: hidden;
+}
+
+.table-wrapper .game-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+    min-width: 90rem;
+    /* margin-top: 1.5rem; */
+}
+
+.game-table th,
+.game-table td {
+    padding: 1rem 1.25rem;
+    text-align: left;
+    border-bottom: 1px solid var(--divider-color);
+    width: min-content;
+    height: 1.75rem;
+}
+
+.game-table th {
+    background-color: var(--sidebar-background-color);
+    color: var(--primary-text-color);
+    font-weight: 600;
+    letter-spacing: 0.05rem;
+    cursor: default;
+    font-size: 0.95rem;
+}
+
+.game-table th::selection {
+    color: var(--primary-text-color);
+    background: var(--primary-text-selection-background-color);
+}
+
+.game-table td::selection {
+    color: var(--primary-text-color);
+    background: var(--secondary-text-selection-background-color);
+}
+
+/* Sortable headers */
+.game-table th.sortable {
+    cursor: pointer;
+    /* user-select: none; */
+    transition: background 0.2s ease;
+}
+
+.game-table th.sortable:hover {
+    background: rgba(59, 130, 246, 0.1);
+}
+
+.game-table th.sortable i {
+    color: var(--accent-color);
+    font-size: 1rem;
+    margin-left: 0.4rem;
+    width: 1.05rem;
+    height: 1.05rem;
+    opacity: 0.5;
+}
+
+.game-table th.sortable:hover i {
+    opacity: 1;
+}
+
+.game-table th.sortable:first-child i {
+    opacity: 1;
+}
+
+/* Table rows */
+.game-table tbody tr {
+    transition: all 0.2s ease-in-out;
+    height: 3.75rem;
+}
+
+.game-table tbody tr:hover {
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.game-table td {
+    color: var(--secondary-text-color);
+}
+
+.platforms {
+    display: flex;
+    gap: 0.4rem;
+}
+
+span.platform-chip {
+    padding: 0.2rem 0.5rem;
+    border-radius: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    user-select: none;
+}
+
+span.platform-chip.nsw{
+    color: #EF4444;
+    background:rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+span.platform-chip.pc {
+    color: #3B82F6;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+span.platform-chip.xsx {
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+}
+
+span.platform-chip.ps4 {
+    color: #e50bf5;
+    background: rgba(248, 5, 240, 0.1);
+    border: 1px solid rgba(245, 11, 237, 0.2);
+}
+
+span.platform-chip.ps5 {
+    color: #0006ff;
+    background: rgba(0, 47, 255, 0.1);
+    border: 1px solid rgba(0, 68, 255, 0.2);
+}
+
+.rating-container {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.rating-value {
+    font-weight: 600;
+    color: var(--primary-text-color);
+    user-select: none;
+}
+
+.rating-max {
+    font-size: 0.7rem;
+    color: var(--secondary-text-color);
+    user-select: none;
+}
+
+.progress-bar {
+    flex: 1;
+    background: var(--divider-color);
+    border-radius: 0.2rem;
+    height: 0.35rem;
+    overflow: hidden;
+    min-width: 5rem;
+}
+
+.progress-fill {
+    height: 100%;
+    border-radius: 0.2rem;
+    transition: width 0.2s ease;
+}
+
+.progress-fill.high {
+    background: #10B981; /* green for 7.5+ */
+}
+.progress-fill.medium {
+    background: #F59E0B; /* orange for 6.0-7.4 */
+}
+.progress-fill.low {
+    background: #EF4444; /* red for <6.0 */
+}
+
+/* Status badges */
+.status-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-align: center;
+    user-select: none;
+    position: relative;
+}
+
+.game-table .status-badge::before {
+    content: '';
+    opacity: 0;
+    position: absolute;
+    bottom: -25%;
+    left: 50%;
+    transform: translateX(-50%);
+    border-width: 7px;
+    border-style: solid;
+    border-color: transparent transparent var(--sidebar-background-color) transparent;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.game-table .status-badge::after {
+    content: attr(stock);
+    opacity: 0;
+    position: absolute;
+    bottom: -125%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--sidebar-background-color);
+    color: var(--primary-text-color);
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    width: auto;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+.status-badge:hover::after,
+.status-badge:hover::before {
+    opacity: 1;
+}
+
+.status-badge.in-stock { /*---------------------------------------------------------------------------------------------------*/
+    background: var(--success-background-color);
+    color: var(--success-color);
+    border: 1px solid var(--success-border-color);
+}
+
+.status-badge.low-stock {
+    background: var(--warning-background-color);
+    color: var(--warning-color);
+    border: 1px solid var(--warning-border-color);
+}
+
+.status-badge.out-of-stock {
+    background: var(--error-background-color);
+    color: var(--error-color);
+    border: 1px solid var(--error-border-color);
+}
+
+/* Action buttons */
+.actions {
+    display: flex;
+    gap: 0.5rem;
+    /* height: 2rem; */
+}
+
+.action-btn {
+    background: transparent;
+    border: none;
+    padding: 0.3rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    user-select: none;
+}
+
+.action-btn.edit {
+    color: var(--accent-color);
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.action-btn.edit:hover {
+    background: var(--accent-color);
+    color: white;
+}
+
+.action-btn.delete {
+    color: #EF4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+.action-btn.delete:hover {
+    background: #EF4444;
+    color: white;
+}
+
+/* Focus states for buttons (reuse your double-ring approach) */
+.action-btn:focus-visible {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+.table-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    /* margin-top: 1.5rem; */
+    padding-top: 1rem;
+    /* border-top: 1px solid var(--divider-color); */
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.pagination-info {
+    background: var(--card-background-color);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    border: 1px solid var(--divider-color);
+    font-size: 0.85rem;
+    color: var(--secondary-text-color);
+}
+
+.pagination-info span {
+    font-weight: 700;
+    font-style: italic;
+    color: var(--primary-text-color);
+    background: rgba(59, 130, 246, 0.1);
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+    margin: 0 0.1rem;
+}
+
+.pagination-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.per-page {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--secondary-text-color);
+}
+
+#per-page-select {
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 6px;
+    padding: 0.3rem 0.5rem;
+    color: var(--primary-text-color);
+    font-size: 0.8rem;
+    cursor: pointer;
+}
+
+.page-btn {
+    background: var(--card-background-color);
+    border: 1px solid var(--divider-color);
+    border-radius: 6px;
+    padding: 0.3rem 0.8rem;
+    color: var(--primary-text-color);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.page-btn:hover:not(:disabled) {
+    border-color: var(--accent-color);
+    color: var(--accent-color);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.page-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
