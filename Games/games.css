@@ -533,6 +533,12 @@ span.platform-chip.ps5 {
     cursor: pointer;
 }
 
+.page-controls {
+    display: flex;
+    align-items: center;
+    /* gap: 0.5rem; */
+}
+
 .page-btn {
     background: var(--card-background-color);
     border: 1px solid var(--divider-color);
@@ -550,7 +556,26 @@ span.platform-chip.ps5 {
     background: rgba(59, 130, 246, 0.05);
 }
 
+.page-btn:focus-visible:not(:disabled) {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
 .page-btn:disabled {
     opacity: 0.4;
     cursor: not-allowed;
+}
+
+.page-btn:first-child {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.page-btn:last-child {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.page-btn i {
+    font-size: 1.25rem;
 }
