@@ -70,7 +70,6 @@
     border: 1px solid var(--divider-color);
     border-radius: 10px;
     padding: 0.5rem 2rem 0.5rem 1rem;
-    /* width: 10rem; */
     width: max-content;
     height: 2.25rem;
     color: var(--primary-text-color);
@@ -110,7 +109,6 @@
     position: absolute;
     top: calc(100% + 8px);
     left: 0;
-    /* width: 8rem; */
     width: max-content;
     background: var(--card-background-color);
     border: 1px solid var(--divider-color);
@@ -123,6 +121,13 @@
     transition: opacity 0.2s ease;
     box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255,255,255,0.05) inset;
     backdrop-filter: blur(0px); /* keeps crisp text */
+}
+
+#pagination-dropdown .dropdown-menu {
+    bottom: calc(100% + 8px);
+    top: unset;
+    /* left: 0; */
+    transform: scale(0.98);
 }
 
 .custom-dropdown.open .dropdown-menu {

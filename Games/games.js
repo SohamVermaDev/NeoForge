@@ -87,12 +87,14 @@ function filterTable() {
         if (matchesSearch && matchesPlatform && matchesRating && matchesStatus) {
             row.style.opacity = 1;
             row.style.display = '';
+            row.classList.remove('filter-hidden');
             row.style.visibility = 'visible';
             hasVisible = true;
         } else {
             // row.style.transition = 'all 0.3s ease-in-out';
             row.style.opacity = 0;
             row.style.display = 'none';
+            row.classList.add('filter-hidden');
             row.style.visibility = 'hidden';
         }
     });
@@ -281,6 +283,7 @@ function initCustomDropdown(dropdownId, optionsConfig) {
 initCustomDropdown('platform-dropdown', { filterKey: 'platform' });
 initCustomDropdown('rating-dropdown', { filterKey: 'rating' });
 initCustomDropdown('status-dropdown', { filterKey: 'status' });
+// initCustomDropdown('pagination-dropdown', { filterKey: 'pagination' });
 
 // ======================== SEARCH INPUT ========================
 if (searchInput) {
@@ -363,68 +366,123 @@ if (resetBtn) {
 
 // ======================== PAGINATION ========================
 let currentPage = 1;
-let rowsPerPage = 10;
-let allFilteredRows = []; // store rows after filtering/sorting
+let rowsPerPage = 10;      // will be updated from dropdown
+let allFilteredRows = [];  // stores rows that passed the filter (no pagination)
 
+// DOM elements
+const prevBtn = document.getElementById('prev-page');
+const nextBtn = document.getElementById('next-page');
+const rangeStartSpan = document.getElementById('range-start');
+const rangeEndSpan = document.getElementById('range-end');
+const totalFilteredSpan = document.getElementById('total-filtered');
+
+// Helper: update the displayed range and button states
 function updatePaginationDisplay() {
     const total = allFilteredRows.length;
+    if (total === 0) {
+        rangeStartSpan.textContent = '0';
+        rangeEndSpan.textContent = '0';
+        totalFilteredSpan.textContent = '0';
+        prevBtn.disabled = true;
+        nextBtn.disabled = true;
+        return;
+    }
     const start = (currentPage - 1) * rowsPerPage + 1;
     const end = Math.min(start + rowsPerPage - 1, total);
-    document.getElementById('range-start').textContent = total === 0 ? 0 : start;
-    document.getElementById('range-end').textContent = total === 0 ? 0 : end;
-    document.getElementById('total-filtered').textContent = total;
-    
-    // Enable/disable prev/next buttons
-    document.getElementById('prev-page').disabled = currentPage === 1;
-    document.getElementById('next-page').disabled = currentPage * rowsPerPage >= total;
+    rangeStartSpan.textContent = start;
+    rangeEndSpan.textContent = end;
+    totalFilteredSpan.textContent = total;
+    prevBtn.disabled = currentPage === 1;
+    nextBtn.disabled = currentPage * rowsPerPage >= total;
 }
 
+// Render the current page (hide all rows, then show only the slice)
 function renderPage() {
     if (!tbody) return;
+    // Hide all rows first (except "no results" row)
+    Array.from(tbody.querySelectorAll('tr:not(.no-results-row)')).forEach(row => {
+        row.style.display = 'none';
+    });
     const start = (currentPage - 1) * rowsPerPage;
     const end = start + rowsPerPage;
     const rowsToShow = allFilteredRows.slice(start, end);
-    
-    // Hide all rows first
-    Array.from(tbody.querySelectorAll('tr')).forEach(row => {
-        row.style.display = 'none';
-    });
-    // Show only rows for current page
     rowsToShow.forEach(row => {
         row.style.display = '';
         row.style.opacity = 1;
         row.style.visibility = 'visible';
     });
-    
     updatePaginationDisplay();
 }
 
-// Override your existing filterTable to also store filtered rows and reset page
+// Collect rows that are NOT filter‑hidden (i.e., they match current filters)
+function collectFilteredRows() {
+    if (!tbody) return [];
+    return Array.from(tbody.querySelectorAll('tr:not(.no-results-row)')).filter(row => {
+        return !row.classList.contains('filter-hidden');
+    });
+}
+
+// Override filterTable to update allFilteredRows and reset pagination
 const originalFilterTable = filterTable;
 filterTable = function() {
-    // Call original filtering logic (which hides rows via display)
-    originalFilterTable();
-    
-    // After filtering, collect visible rows (rows that are not display:none)
-    allFilteredRows = Array.from(tbody.querySelectorAll('tr:not(.no-results-row)')).filter(row => {
-        const computedStyle = window.getComputedStyle(row);
-        return computedStyle.display !== 'none' && row.style.display !== 'none';
-    });
-    
-    // Reset to page 1 and render
+    originalFilterTable();               // runs filter logic (adds/removes 'filter-hidden')
+    allFilteredRows = collectFilteredRows(); // capture filtered rows in correct DOM order
     currentPage = 1;
     renderPage();
 };
 
-// Attach event listeners for pagination
-document.getElementById('prev-page').addEventListener('click', () => {
+// Override sortTable to reorder all rows, then rebuild allFilteredRows and repaginate
+const originalSortTable = sortTable;
+sortTable = function(columnIndex, sortType) {
+    originalSortTable(columnIndex, sortType);   // sorts the DOM (all rows, hidden or not)
+    // After sorting, rebuild allFilteredRows from rows without 'filter-hidden'
+    allFilteredRows = collectFilteredRows();
+    currentPage = 1;
+    renderPage();
+};
+
+// ----- Pagination custom dropdown logic -----
+const paginationDropdown = document.getElementById('pagination-dropdown');
+const paginationTrigger = paginationDropdown.querySelector('.dropdown-trigger');
+const paginationMenu = paginationDropdown.querySelector('.dropdown-menu');
+const paginationSelectedText = paginationDropdown.querySelector('.dropdown-selected-text');
+const paginationOptions = paginationDropdown.querySelectorAll('.dropdown-option');
+
+// Toggle dropdown
+paginationTrigger.addEventListener('click', (e) => {
+    e.stopPropagation();
+    paginationDropdown.classList.toggle('open');
+});
+document.addEventListener('click', (e) => {
+    if (!paginationDropdown.contains(e.target)) {
+        paginationDropdown.classList.remove('open');
+    }
+});
+
+// Handle per‑page selection
+paginationOptions.forEach(option => {
+    option.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const newValue = parseInt(option.textContent.trim(), 10);
+        if (isNaN(newValue)) return;
+        rowsPerPage = newValue;
+        paginationSelectedText.textContent = newValue;
+        paginationOptions.forEach(opt => opt.classList.remove('active'));
+        option.classList.add('active');
+        paginationDropdown.classList.remove('open');
+        currentPage = 1;
+        renderPage();
+    });
+});
+
+// ----- Prev / Next buttons -----
+prevBtn.addEventListener('click', () => {
     if (currentPage > 1) {
         currentPage--;
         renderPage();
     }
 });
-
-document.getElementById('next-page').addEventListener('click', () => {
+nextBtn.addEventListener('click', () => {
     const totalPages = Math.ceil(allFilteredRows.length / rowsPerPage);
     if (currentPage < totalPages) {
         currentPage++;
@@ -432,26 +490,15 @@ document.getElementById('next-page').addEventListener('click', () => {
     }
 });
 
-document.getElementById('per-page-select').addEventListener('change', (e) => {
-    rowsPerPage = parseInt(e.target.value);
-    currentPage = 1;
-    renderPage();
-});
-
-// Make sure sorting also triggers pagination reset
-const originalSortTable = sortTable;
-sortTable = function(columnIndex, sortType) {
-    originalSortTable(columnIndex, sortType);
-    // After sorting, re-collect filtered rows and re-render
-    allFilteredRows = Array.from(tbody.querySelectorAll('tr:not(.no-results-row)')).filter(row => {
-        const computedStyle = window.getComputedStyle(row);
-        return computedStyle.display !== 'none' && row.style.display !== 'none';
-    });
-    currentPage = 1;
-    renderPage();
-};
-
-// Initial run after table loads
+// ----- Initialisation -----
+const activeOption = paginationDropdown.querySelector('.dropdown-option.active');
+if (activeOption) {
+    rowsPerPage = parseInt(activeOption.textContent.trim(), 10);
+    paginationSelectedText.textContent = rowsPerPage;
+} else {
+    rowsPerPage = parseInt(paginationSelectedText.textContent, 10) || 10;
+}
+// Run initial filter to populate allFilteredRows and render
 setTimeout(() => {
-    filterTable(); // this will trigger the overridden version
-}, 100);
+    filterTable();  // this calls the overridden version
+}, 50);
