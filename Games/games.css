@@ -18,6 +18,11 @@
     /* width: calc(100vw - 5rem - 1rem); */
 }
 
+.table-wrapper .search-wrapper {
+    display: flex;
+    gap: 0.4125rem;
+}
+
 .table-wrapper .search-input {
     background: var(--card-background-color);
     border: 1px solid var(--divider-color);
@@ -56,6 +61,11 @@
 .table-wrapper .search-input:focus-visible {
     outline: none;
     box-shadow: 0 0 0 2px var(--card-background-color), 0 0 0 4px var(--accent-color);
+}
+
+.table-wrapper .filter-wrapper {
+    display: flex;
+    gap: 0.4125rem;
 }
 
 /* Custom dropdown container */
