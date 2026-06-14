@@ -1,0 +1,30 @@
+{
+    "$schema": "https://json.schemastore.org/package.json",
+    "name": "backend",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "dev": "nodemon server.js",
+        "format": "biome format --write .",
+        "lint": "biome lint --write .",
+        "check": "biome check --write ."
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "cors": "^2.8.6",
+        "dotenv": "^17.4.2",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "mysql2": "^3.22.5"
+    },
+    "devDependencies": {
+        "@biomejs/biome": "^2.5.0",
+        "nodemon": "^3.1.14"
+    }
+}
