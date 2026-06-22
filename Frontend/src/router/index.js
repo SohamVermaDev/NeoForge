@@ -7,7 +7,7 @@ const routes = [
         path: '/admin',
         component: AdminLayout,
         children: [
-            { path: '', redirect: 'dashboard' },
+            { path: '', redirect: '/admin/dashboard' },
             { path: 'dashboard', component: Dashboard },
         ],
     },
