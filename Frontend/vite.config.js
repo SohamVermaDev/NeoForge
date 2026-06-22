@@ -3,7 +3,6 @@ import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 import vueDevTools from 'vite-plugin-vue-devtools';
 
-// https://vite.dev/config/
 export default defineConfig({
     plugins: [vue(), vueDevTools()],
     resolve: {
@@ -15,8 +14,8 @@ export default defineConfig({
         preprocessorOptions: {
             scss: {
                 additionalData: `
-                    @import "@/styles/_variables.scss";
-                    @import "@/styles/_mixins.scss";
+                    @use "@/styles/_variables";
+                    @use "@/styles/_mixins";
                 `,
             },
         },

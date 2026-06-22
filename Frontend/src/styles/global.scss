@@ -1,0 +1,36 @@
+/* 1. Sizing rules & border box */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* 2. Body baseline setup */
+body {
+    min-height: 100vdh;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+
+    /* 2.1. Responsive media defaults */
+    img, picture, video, canvas, svg {
+        display: block;
+        max-width: 100%;
+        height: auto;
+    }
+
+    /* 2.2. Inherit fonts for form inputs */
+    input, button, textarea, select {
+        font: inherit;
+    }
+
+    /* 2.3. Clear list decoration */
+    ol, ul {
+        list-style: none;
+    }
+
+    /* 2.4. Clear links' stlyings */
+    a {
+        text-decoration: none;
+        color: inherit;
+    }
+}
