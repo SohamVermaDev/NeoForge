@@ -7,7 +7,7 @@
 
 /* 2. Body baseline setup */
 body {
-    min-height: 100vdh;
+    min-height: 100dvh;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
 
@@ -32,5 +32,24 @@ body {
     a {
         text-decoration: none;
         color: inherit;
+    }
+
+    /* 2.5 Setup Logo */
+    .logo {
+        font-family: "Orbitron", sans-serif;
+        font-optical-sizing: auto;
+        font-style: italic;
+        font-weight: 600;
+        font-size: 1.5rem;
+        letter-spacing: 0.1rem;
+
+        .neo {
+            color: colors.$accent;
+            text-shadow: colors.$accent 1px 0px 4px;
+        }
+
+        .forge {
+            color: colors.$gray-200;
+        }
     }
 }

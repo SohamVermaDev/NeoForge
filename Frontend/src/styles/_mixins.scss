@@ -1,0 +1,32 @@
+// ==== Layout ====
+@mixin flex-center {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+@mixin flex-between {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+@mixin flex-column {
+    display: flex;
+    flex-direction: column;
+}
+
+// ===== Focus State =====
+@mixin focus-ring($bg-color: $bg-card, $accent-color: $accent) {
+    &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 2px $bg-color, 0 0 0 4px $accent-color;
+    }
+}
+
+// ===== Status Badge =====
+@mixin status-badge($color, $bg, $border) {
+    background: $bg;
+    color: $color;
+    border: 1px solid $border;
+}

@@ -1,0 +1,32 @@
+// ===== PALETTE =====
+$blue-500: #3B82F6;
+$blue-600: #2563EB;
+
+$gray-900: #111111;
+$gray-800: #121212;
+$gray-700: #1E1E1E;
+$gray-600: #2A2A2A;
+$gray-200: #A0A0A0;
+$gray-50: #EDEDED;
+
+$green-500: #10B981;
+$yellow-500: #F59E0B;
+$red-500: #EF4444;
+
+// ===== SEMANTIC =====
+$accent: $blue-500;
+$accent-hover: $blue-600;
+
+$text-primary: $gray-50;
+$text-secondary: $gray-200;
+$text-muted: $gray-200;
+
+$bg-body: $gray-900;
+$bg-sidebar: $gray-800;
+$bg-card: $gray-700;
+$border-divider: $gray-600;
+
+// ===== STATUSES =====
+$status-success: $green-500;
+$status-warning: $yellow-500;
+$status-error: $red-500;
