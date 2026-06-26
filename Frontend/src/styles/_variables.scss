@@ -1,3 +1,4 @@
+@use "./colors";
 // ===== RADIUS =====
 $radius: 8px;
 $radius-lg: 20px;
@@ -9,3 +10,7 @@ $shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.5);
 // ==== Transitions ====
 $transition-fast: 0.2s ease;
 $transition-smooth: 0.3s ease-in-out;
+
+// ===== BORDERS =====
+$border-base: 2px solid colors.$border-divider;
+$border-light: 1px solid colors.$border-divider;

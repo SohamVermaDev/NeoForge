@@ -1,0 +1,4 @@
+// ===== OPACITY HELPER =====
+@function alpha($color, $opacity) {
+    @return rgba($color, $opacity);
+}
