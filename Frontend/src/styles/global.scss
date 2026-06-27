@@ -10,6 +10,7 @@ body {
     min-height: 100dvh;
     line-height: 1.5;
     -webkit-font-smoothing: antialiased;
+    font-family: Arial, Helvetica, sans-serif;
 
     /* 2.1. Responsive media defaults */
     img, picture, video, canvas, svg {
@@ -26,6 +27,10 @@ body {
     /* 2.3. Clear list decoration */
     ol, ul {
         list-style: none;
+
+        li {
+            list-style-type: none;
+        }
     }
 
     /* 2.4. Clear links' stlyings */
