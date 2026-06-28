@@ -1,4 +1,21 @@
 <script setup>
+import { onMounted, ref } from 'vue';
+
+const collapsed = ref(false);
+
+// biome-ignore lint/correctness/noUnusedVariables: used in hamburger icon's @click directive
+const collapse_sidebar = () => {
+    collapsed.value = !collapsed.value;
+    localStorage.setItem('IsCollapsed', collapsed.value);
+};
+
+onMounted(() => {
+    const saved = localStorage.getItem('IsCollapsed');
+    if (saved !== null) {
+        collapsed.value = saved === 'true';
+    }
+});
+
 // biome-ignore lint/correctness/noUnusedVariables: used in v-for template
 const navLinks = [
     { icon: 'fas fa-home', label: 'Dashboard', route: '/admin/dashboard' },
@@ -11,17 +28,17 @@ const navLinks = [
 </script>
 
 <template>
-    <div class="sidebar">
+    <div class="sidebar" :class="{'collapsed': collapsed}">
         <div class="heading">
-            <h2 class="logo"><span class="neo">Neo</span><span class="forge">Forge</span></h2>
-            <button><i class="fas fa-bars"></i></button>
+            <h2 v-if="collapsed === false" class="logo"><span class="neo">Neo</span><span class="forge">Forge</span></h2>
+            <button @click="collapse_sidebar()"><i class="fas fa-bars"></i></button>
         </div>
         <hr class="divider">
         <ul class="nav-links">
             <li v-for="link in navLinks" :key="link.route" class="list-item">
                 <router-link :to="link.route" exact-active-class="active" class="link">
                     <i :class="link.icon" class="icon"></i>
-                    <p class="nav-text">{{ link.label }}</p>
+                    <p v-if="collapsed === false" class="nav-text">{{ link.label }}</p>
                 </router-link>
             </li>
         </ul>
@@ -33,7 +50,7 @@ const navLinks = [
     width: 17.5rem;
     z-index: 99;
     height: 100vh;
-    position: fixed;
+    position: sticky;
     top: 0;
     left: 0;
     overflow: hidden;
@@ -146,6 +163,10 @@ const navLinks = [
                 }
             }
         }
+    }
+
+    &.collapsed {
+        width: 5rem;
     }
 }
 </style>
