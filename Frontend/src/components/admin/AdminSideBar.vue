@@ -20,7 +20,7 @@ onMounted(() => {
 const navLinks = [
     { icon: 'fas fa-home', label: 'Dashboard', route: '/admin/dashboard' },
     { icon: 'fa-solid fa-users', label: 'Customers', route: '/admin' },
-    { icon: 'fa-solid fa-cubes', label: 'Games', route: '/admin' },
+    { icon: 'fa-solid fa-cubes', label: 'Games', route: '/admin/games' },
     { icon: 'fa-solid fa-cart-shopping', label: 'Orders', route: '/admin' },
     { icon: 'fa-solid fa-chart-pie', label: 'Reports', route: '/admin' },
     { icon: 'fa-solid fa-gear', label: 'Settings', route: '/admin' },
