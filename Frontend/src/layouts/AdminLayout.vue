@@ -10,3 +10,10 @@ import AdminSideBar from '@/components/admin/AdminSideBar.vue';
         </main>
     </div>
 </template>
+
+<style lang="scss" scoped>
+.admin-layout {
+    display: flex;
+    background-color: colors.$bg-body;
+}
+</style>
