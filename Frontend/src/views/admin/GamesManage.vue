@@ -12,7 +12,7 @@
                 </div>
             </div>
             <div class="filter-wrapper">
-                <div class="custom-dropdown open" id="platform-dropdown">
+                <div class="custom-dropdown" id="platform-dropdown">
                     <button class="dropdown-trigger" id="platform-trigger">
                         <span class="dropdown-selected-text">All Platforms</span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
@@ -20,19 +20,19 @@
                     <div class="dropdown-menu" id="platform-filter">
                         <button class="dropdown-option platform-option active" data-platform="all">All Platforms</button>
                         <button class="dropdown-option platform-option" data-platform="pc">
-                            <span class="pc">PC</span>
+                            <span class=" platform pc">PC</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="ps5">
-                            <span class="ps5">PS5</span>
+                            <span class=" platform ps5">PS5</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="ps4">
-                            <span class="ps4">PS4</span>
+                            <span class="platform ps4">PS4</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="xsx">
-                            <span class="xsx">XSX</span>
+                            <span class="platform xsx">XSX</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="nsw">
-                            <span class="nsw">NSW</span>
+                            <span class="platform nsw">NSW</span>
                         </button>
                     </div>
                 </div>
@@ -43,9 +43,9 @@
                     </button>
                     <div class="dropdown-menu" id="rating-filter">
                         <button class="dropdown-option rating-option active" data-rating="all">All Ratings</button>
-                        <button class="dropdown-option rating-option" data-rating="high">High (8.0 &lt;)</button>
-                        <button class="dropdown-option rating-option" data-rating="medium">Medium (6.0 - 7.9)</button>
-                        <button class="dropdown-option rating-option" data-rating="low">Low (&lt; 6.0)</button>
+                        <button class="dropdown-option rating-option" data-rating="high">High (&ge; 8.0)</button>
+                        <button class="dropdown-option rating-option" data-rating="medium">Medium (6.0&ndash;7.9)</button>
+                        <button class="dropdown-option rating-option" data-rating="low">Low (&le; 6.0)</button>
                     </div>
                 </div>
                 <div class="custom-dropdown" id="status-dropdown">
@@ -57,6 +57,9 @@
                         <button class="dropdown-option status-option active" data-status="all">All Stock</button>
                         <button class="dropdown-option status-option" data-status="instock">
                             <span class="status-badge in-stock">In Stock</span>
+                        </button>
+                        <button class="dropdown-option status-option" data-status="lowstock">
+                            <span class="status-badge low-stock">Low Stock</span>
                         </button>
                         <button class="dropdown-option status-option" data-status="outofstock">
                             <span class="status-badge out-of-stock">Out of Stock</span>
@@ -341,17 +344,19 @@
             @at-root .custom-dropdown {
                 position: relative;
                 display: inline-flex;
+                width: 9rem;
 
                 .dropdown-trigger {
                     @include mixins.flex-between;
                     @include mixins.focus-ring;
+                    justify-content: space-evenly;
                     background: colors.$bg-card;
                     border: variables.$border-light;
                     transition: variables.$transition-smooth;
                     color: colors.$text-primary;
                     border-radius: variables.$radius;
-                    padding: 0.5rem 2rem 0.5rem 1rem;
-                    width: max-content;
+                    padding: 0.5rem 1rem;
+                    width: inherit;
                     height: 2.25rem;
                     font-size: 0.875rem;
                     font-weight: 500;
@@ -362,6 +367,10 @@
                     &:hover {
                         border-color: colors.$accent;
                         background: functions.alpha(colors.$accent, 0.05);
+                    }
+
+                    .dropdown-selected-text {
+                        width: max-content;
                     }
 
                     .dropdown-arrow {
@@ -378,7 +387,7 @@
                     position: absolute;
                     top: calc(100% + 8px);
                     left: 0;
-                    width: max-content;
+                    width: inherit;
                     border-radius: 14px;
                     padding: 0.5rem;
                     z-index: 100;
@@ -391,6 +400,7 @@
                     .dropdown-option {
                         @include mixins.flex-center;
                         @include mixins.focus-ring;
+                        justify-content: flex-start;
                         color: colors.$text-primary;
                         transition: all 0.12s ease;
                         width: 100%;
@@ -405,6 +415,9 @@
                         text-align: left;
                         gap: 0.5rem;
                         user-select: none;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
 
                         &:last-child {
                             margin-bottom: 0;
@@ -437,6 +450,10 @@
                             }
                         }
                     }
+                }
+
+                &#pagination-dropdown {
+                    width: 5rem;
                 }
 
                 &.open {
@@ -613,7 +630,7 @@
                             }
                         }
 
-                        .status-badge {
+                        @at-root .status-badge {
                             display: inline-block;
                             padding: 0.25rem 0.75rem;
                             border-radius: variables.$radius-lg;
@@ -623,7 +640,7 @@
                             user-select: none;
                             position: relative;
 
-                            &::before {
+                            :not(.dropdown-option) > &::before {
                                 content: '';
                                 opacity: 0;
                                 position: absolute;
@@ -637,7 +654,7 @@
                                 transition: opacity 0.3s ease;
                             }
 
-                            &::after {
+                            :not(.dropdown-option) > &::after {
                                 content: attr(stock);
                                 opacity: 0;
                                 position: absolute;
