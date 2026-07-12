@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
 
 const props = defineProps({
     label: {
@@ -16,15 +16,15 @@ const props = defineProps({
     },
     prefix: {
         type: String,
-        default: '',
+        default: "",
     },
     suffix: {
         type: String,
-        default: '',
+        default: "",
     },
     iconBg: {
         type: String,
-        default: 'rgba(59, 130, 246, 0.12)',
+        default: "rgba(59, 130, 246, 0.12)",
     },
 });
 
@@ -36,11 +36,15 @@ const formattedValue = computed(() => {
 <template>
     <div class="stat-card">
         <div class="stat-icon" :style="{ backgroundColor: iconBg }">
-            <i :class="icon"></i>
+            <i :class="icon" />
         </div>
         <div class="stat-content">
-            <p class="stat-label">{{ label }}</p>
-            <p class="stat-value">{{ formattedValue }}</p>
+            <p class="stat-label">
+                {{ label }}
+            </p>
+            <p class="stat-value">
+                {{ formattedValue }}
+            </p>
         </div>
     </div>
 </template>

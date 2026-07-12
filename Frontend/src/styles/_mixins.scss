@@ -21,7 +21,9 @@
 @mixin focus-ring($bg-color: colors.$bg-card, $accent-color: colors.$accent) {
     &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 2px $bg-color, 0 0 0 4px $accent-color;
+        box-shadow:
+            0 0 0 2px $bg-color,
+            0 0 0 4px $accent-color;
     }
 }
 

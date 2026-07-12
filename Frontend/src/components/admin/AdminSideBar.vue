@@ -1,44 +1,48 @@
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref } from "vue";
 
 const collapsed = ref(false);
 
 // biome-ignore lint/correctness/noUnusedVariables: used in hamburger icon's @click directive
 const collapse_sidebar = () => {
     collapsed.value = !collapsed.value;
-    localStorage.setItem('IsCollapsed', collapsed.value);
+    localStorage.setItem("IsCollapsed", collapsed.value);
 };
 
 onMounted(() => {
-    const saved = localStorage.getItem('IsCollapsed');
+    const saved = localStorage.getItem("IsCollapsed");
     if (saved !== null) {
-        collapsed.value = saved === 'true';
+        collapsed.value = saved === "true";
     }
 });
 
 // biome-ignore lint/correctness/noUnusedVariables: used in v-for template
 const navLinks = [
-    { icon: 'fas fa-home', label: 'Dashboard', route: '/admin/dashboard' },
-    { icon: 'fa-solid fa-users', label: 'Customers', route: '/admin' },
-    { icon: 'fa-solid fa-cubes', label: 'Games', route: '/admin/games' },
-    { icon: 'fa-solid fa-cart-shopping', label: 'Orders', route: '/admin' },
-    { icon: 'fa-solid fa-chart-pie', label: 'Reports', route: '/admin' },
-    { icon: 'fa-solid fa-gear', label: 'Settings', route: '/admin' },
+    { icon: "fas fa-home", label: "Dashboard", route: "/admin/dashboard" },
+    { icon: "fa-solid fa-users", label: "Customers", route: "/admin" },
+    { icon: "fa-solid fa-cubes", label: "Games", route: "/admin/games" },
+    { icon: "fa-solid fa-cart-shopping", label: "Orders", route: "/admin" },
+    { icon: "fa-solid fa-chart-pie", label: "Reports", route: "/admin" },
+    { icon: "fa-solid fa-gear", label: "Settings", route: "/admin" },
 ];
 </script>
 
 <template>
-    <div class="sidebar" :class="{'collapsed': collapsed}">
+    <div class="sidebar" :class="{ collapsed: collapsed }">
         <div class="heading">
             <h2 v-if="collapsed === false" class="logo"><span class="neo">Neo</span><span class="forge">Forge</span></h2>
-            <button @click="collapse_sidebar()"><i class="fas fa-bars"></i></button>
+            <button @click="collapse_sidebar()">
+                <i class="fas fa-bars" />
+            </button>
         </div>
-        <hr class="divider">
+        <hr class="divider" />
         <ul class="nav-links">
             <li v-for="link in navLinks" :key="link.route" class="list-item">
                 <router-link :to="link.route" exact-active-class="active" class="link">
-                    <i :class="link.icon" class="icon"></i>
-                    <p v-if="collapsed === false" class="nav-text">{{ link.label }}</p>
+                    <i :class="link.icon" class="icon" />
+                    <p v-if="collapsed === false" class="nav-text">
+                        {{ link.label }}
+                    </p>
                 </router-link>
             </li>
         </ul>
@@ -103,7 +107,7 @@ const navLinks = [
 
         .list-item {
             width: 100%;
-        
+
             .link {
                 @include mixins.flex-center;
                 transition: variables.$transition-smooth;
