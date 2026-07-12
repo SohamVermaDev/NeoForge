@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 const games = ref([
     {
@@ -104,6 +104,12 @@ const games = ref([
     },
 ]);
 
+const searchTerm = ref("");
+
+const filteredGames = computed(() => {
+    return games.value.filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()));
+});
+
 const getRatingClass = (rating) => {
     if (rating >= 8.0) return "high";
     if (rating >= 6.0) return "medium";
@@ -127,7 +133,7 @@ const statusMap = {
     <div class="table-wrapper">
         <div class="table-controls">
             <div class="search-wrapper">
-                <input type="text" placeholder="Search games..." class="search-input" />
+                <input v-model="searchTerm" type="text" placeholder="Search games..." class="search-input" />
                 <button class="reset">Reset All Filters</button>
                 <div class="add-game-container">
                     <button id="add-game-btn" class="add-game-btn">+ Add New Game</button>
@@ -206,7 +212,7 @@ const statusMap = {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="game in games" :key="game.id">
+                    <tr v-for="game in filteredGames" :key="game.id">
                         <td>{{ game.id }}</td>
                         <td>{{ game.title }}</td>
                         <td>{{ game.developer }}</td>
