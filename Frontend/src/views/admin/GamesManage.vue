@@ -1,11 +1,133 @@
 <script setup>
+import { ref } from "vue";
+
+const games = ref([
+    {
+        id: 1,
+        title: "Cyberpunk 2077",
+        developer: "CD Projekt Red",
+        genre: "RPG",
+        price: 29.99,
+        platforms: ["pc", "xsx", "nsw"],
+        rating: 9.4,
+        stock: 257,
+    },
+    {
+        id: 2,
+        title: "Hollow Knight",
+        developer: "Team17",
+        genre: "Metroidvania",
+        price: 14.99,
+        platforms: ["pc", "xsx", "nsw", "ps4"],
+        rating: 9.2,
+        stock: 150,
+    },
+    {
+        id: 3,
+        title: "Elden Ring",
+        developer: "FromSoftware",
+        genre: "Action RPG",
+        price: 59.99,
+        platforms: ["pc", "ps5", "xsx"],
+        rating: 9.7,
+        stock: 328,
+    },
+    {
+        id: 4,
+        title: "Stardew Valley",
+        developer: "ConcernedApe",
+        genre: "Simulation",
+        price: 14.99,
+        platforms: ["pc", "ps4", "nsw", "xsx"],
+        rating: 9.0,
+        stock: 72,
+    },
+    {
+        id: 5,
+        title: "The Last of Us Part II",
+        developer: "Naughty Dog",
+        genre: "Action Adventure",
+        price: 39.99,
+        platforms: ["ps5", "ps4"],
+        rating: 8.8,
+        stock: 41,
+    },
+    {
+        id: 6,
+        title: "Dead Space",
+        developer: "Motive Studio",
+        genre: "Survival Horror",
+        price: 49.99,
+        platforms: ["pc", "ps5", "xsx"],
+        rating: 8.6,
+        stock: 18,
+    },
+    {
+        id: 7,
+        title: "Diablo IV",
+        developer: "Blizzard Entertainment",
+        genre: "Action RPG",
+        price: 69.99,
+        platforms: ["pc", "ps5", "xsx"],
+        rating: 7.4,
+        stock: 0,
+    },
+    {
+        id: 8,
+        title: "Sonic Frontiers",
+        developer: "Sonic Team",
+        genre: "Platformer",
+        price: 39.99,
+        platforms: ["pc", "ps5", "nsw"],
+        rating: 6.8,
+        stock: 12,
+    },
+    {
+        id: 9,
+        title: "Marvel's Avengers",
+        developer: "Crystal Dynamics",
+        genre: "Action RPG",
+        price: 19.99,
+        platforms: ["pc", "ps5", "ps4", "xsx"],
+        rating: 5.6,
+        stock: 0,
+    },
+    {
+        id: 10,
+        title: "The Ascent",
+        developer: "Neon Giant",
+        genre: "Cyberpunk Shooter",
+        price: 24.99,
+        platforms: ["pc", "xsx", "ps5"],
+        rating: 7.9,
+        stock: 9,
+    },
+]);
+
+const getRatingClass = (rating) => {
+    if (rating >= 8.0) return "high";
+    if (rating >= 6.0) return "medium";
+    return "low";
+};
+
+const getStockStatus = (stock) => {
+    if (stock === 0) return "out-of-stock";
+    if (stock < 50) return "low-stock";
+    return "in-stock";
+};
+
+const statusMap = {
+    "in-stock": "In Stock",
+    "out-of-stock": "Out of Stock",
+    "low-stock": "Low Stock",
+};
 </script>
 
 <template>
     <div class="table-wrapper">
         <div class="table-controls">
             <div class="search-wrapper">
-                <input type="text" placeholder="Search games..." class="search-input">
+                <input type="text" placeholder="Search games..." class="search-input" />
                 <button class="reset">Reset All Filters</button>
                 <div class="add-game-container">
                     <button id="add-game-btn" class="add-game-btn">+ Add New Game</button>
@@ -20,10 +142,10 @@
                     <div class="dropdown-menu" id="platform-filter">
                         <button class="dropdown-option platform-option active" data-platform="all">All Platforms</button>
                         <button class="dropdown-option platform-option" data-platform="pc">
-                            <span class=" platform pc">PC</span>
+                            <span class="platform pc">PC</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="ps5">
-                            <span class=" platform ps5">PS5</span>
+                            <span class="platform ps5">PS5</span>
                         </button>
                         <button class="dropdown-option platform-option" data-platform="ps4">
                             <span class="platform ps4">PS4</span>
@@ -84,94 +206,39 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr>
-                        <td>1</td>
-                        <td>Cyberpunk 2077</td>
-                        <td>CD Projekt Red</td>
-                        <td>RPG</td>
-                        <td>$29.99</td>
+                    <tr v-for="game in games" :key="game.id">
+                        <td>{{ game.id }}</td>
+                        <td>{{ game.title }}</td>
+                        <td>{{ game.developer }}</td>
+                        <td>{{ game.genre }}</td>
+                        <td>${{ game.price }}</td>
                         <td>
                             <div class="platforms">
-                                <span class="platform pc">PC</span>
-                                <span class="platform xsx">XSX</span>
-                                <span class="platform nsw">NSW</span>
+                                <span v-for="platform in game.platforms" :class="platform" class="platform">
+                                    {{ platform.toUpperCase() }}
+                                </span>
                             </div>
                         </td>
                         <td>
                             <div class="rating-container">
                                 <div class="rating">
-                                    <span class="rating-value">9.5 </span>
+                                    <span class="rating-value">{{ game.rating }}&nbsp; </span>
                                     <span class="rating-max">/ 10</span>
                                 </div>
                                 <div class="progress-bar">
-                                    <div class="progress-fill"></div>
+                                    <div
+                                        :class="getRatingClass(game.rating)"
+                                        :style="{ width: `${(game.rating / 10) * 100}%` }"
+                                        class="progress-fill"
+                                    ></div>
                                 </div>
                             </div>
                         </td>
-                        <td><span class="status-badge in-stock" stock="257">In Stock</span></td>
                         <td>
-                            <div class="actions">
-                                <button class="action-btn edit">Edit</button>
-                                <button class="action-btn delete">Delete</button>
-                            </div>
+                            <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
+                                {{ statusMap[getStockStatus(game.stock)] }}
+                            </span>
                         </td>
-                    </tr>
-                    <tr>
-                        <td>2</td>
-                        <td>Hollow Knight</td>
-                        <td>Team17</td>
-                        <td>Metroidvania</td>
-                        <td>$14.99</td>
-                        <td>
-                            <div class="platforms">
-                                <span class="platform pc">PC</span>
-                                <span class="platform nsw">NSW</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="rating-container">
-                                <div class="rating">
-                                    <span class="rating-value">7.8 </span>
-                                    <span class="rating-max">/ 10</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="status-badge low-stock" stock="24">Low Stock</span></td>
-                        <td>
-                            <div class="actions">
-                                <button class="action-btn edit">Edit</button>
-                                <button class="action-btn delete">Delete</button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td>3</td>
-                        <td>Elden Ring</td>
-                        <td>FromSoftware</td>
-                        <td>Action RPG</td>
-                        <td>$59.99</td>
-                        <td>
-                            <div class="platforms">
-                                <span class="platform pc">PC</span>
-                                <span class="platform xsx">XSX</span>
-                                <span class="platform ps5">PS5</span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="rating-container">
-                                <div class="rating">
-                                    <span class="rating-value">8.7 </span>
-                                    <span class="rating-max">/ 10</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div class="progress-fill"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="status-badge out-of-stock" stock="0">Out of Stock</span></td>
                         <td>
                             <div class="actions">
                                 <button class="action-btn edit">Edit</button>
@@ -184,8 +251,7 @@
         </div>
         <div class="table-footer">
             <div class="pagination-info">
-                Showing <span id="range-start">1</span>-<span id="range-end">10</span> 
-                of <span id="total-filtered">0</span> games
+                Showing <span id="range-start">1</span>&dash;<span id="range-end">10</span> of <span id="total-filtered">0</span> games
             </div>
             <div class="pagination-controls">
                 <div class="per-page">
@@ -206,7 +272,7 @@
                 </div>
                 <div class="page-controls">
                     <button id="prev-page" class="page-btn" disabled><i class="fa-solid fa-caret-left"></i></button>
-                    <button id="next-page" class="page-btn" disabled><i class="fa-solid fa-caret-right"></i></button> 
+                    <button id="next-page" class="page-btn" disabled><i class="fa-solid fa-caret-right"></i></button>
                 </div>
             </div>
         </div>
@@ -220,37 +286,57 @@
             <form id="new-game-form">
                 <div class="form-group">
                     <label>Game Title *</label>
-                    <input type="text" id="game-title" required>
+                    <input type="text" id="game-title" required />
                 </div>
                 <div class="form-group">
                     <label>Developer/Publisher *</label>
-                    <input type="text" id="game-developer" required placeholder="e.g., Electronic Arts, Activision">
+                    <input type="text" id="game-developer" required placeholder="e.g., Electronic Arts, Activision" />
                 </div>
                 <div class="form-group">
                     <label>Genre *</label>
-                    <input type="text" id="game-genre" required placeholder="e.g., RPG, Action">
+                    <input type="text" id="game-genre" required placeholder="e.g., RPG, Action" />
                 </div>
                 <div class="form-group">
                     <label>Price ($) *</label>
-                    <input type="number" id="game-price" step="0.01" min="0" required>
+                    <input type="number" id="game-price" step="0.01" min="0" required />
                 </div>
                 <div class="form-group">
                     <label>Platforms *</label>
                     <div class="platform-checkboxes">
-                        <label><input type="checkbox" value="pc"><div class="checkmark"></div> <span class="platform pc">PC</span></label>
-                        <label><input type="checkbox" value="ps5"><div class="checkmark"></div> <span class="platform ps5">PS5</span></label>
-                        <label><input type="checkbox" value="ps4"><div class="checkmark"></div> <span class="platform ps4">PS4</span></label>
-                        <label><input type="checkbox" value="xsx"><div class="checkmark"></div> <span class="platform xsx">XSX</span></label>
-                        <label><input type="checkbox" value="nsw"><div class="checkmark"></div> <span class="platform nsw">NSW</span></label>
+                        <label>
+                            <input type="checkbox" value="pc" />
+                            <div class="checkmark"></div>
+                            <span class="platform pc">PC</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" value="ps5" />
+                            <div class="checkmark"></div>
+                            <span class="platform ps5">PS5</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" value="ps4" />
+                            <div class="checkmark"></div>
+                            <span class="platform ps4">PS4</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" value="xsx" />
+                            <div class="checkmark"></div>
+                            <span class="platform xsx">XSX</span>
+                        </label>
+                        <label>
+                            <input type="checkbox" value="nsw" />
+                            <div class="checkmark"></div>
+                            <span class="platform nsw">NSW</span>
+                        </label>
                     </div>
                 </div>
                 <div class="form-group">
                     <label>Stock *</label>
-                    <input type="number" id="game-stock" min="0" required>
+                    <input type="number" id="game-stock" min="0" required />
                 </div>
                 <div class="form-group">
                     <label>Rating (0-10)</label>
-                    <input type="number" id="game-rating" step="0.1" min="0.1" max="10" value="0">
+                    <input type="number" id="game-rating" step="0.1" min="0.1" max="10" value="0" />
                 </div>
                 <div class="form-actions">
                     <button type="button" id="cancel-modal" class="cancel-btn">Cancel</button>
@@ -394,7 +480,9 @@
                     opacity: 0;
                     visibility: hidden;
                     transform: translateY(-6px) scale(0.98);
-                    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+                    box-shadow:
+                        0 12px 28px rgba(0, 0, 0, 0.4),
+                        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
                     backdrop-filter: blur(0px);
 
                     .dropdown-option {
@@ -558,15 +646,27 @@
                                 user-select: none;
 
                                 &.nsw {
-                                    @include mixins.status-badge(colors.$status-error, functions.alpha(colors.$status-error, 0.1), functions.alpha(colors.$status-error, 0.2));
+                                    @include mixins.status-badge(
+                                        colors.$status-error,
+                                        functions.alpha(colors.$status-error, 0.1),
+                                        functions.alpha(colors.$status-error, 0.2)
+                                    );
                                 }
 
                                 &.pc {
-                                    @include mixins.status-badge(colors.$blue-500, functions.alpha(colors.$blue-500, 0.1), functions.alpha(colors.$blue-500, 0.2));
+                                    @include mixins.status-badge(
+                                        colors.$blue-500,
+                                        functions.alpha(colors.$blue-500, 0.1),
+                                        functions.alpha(colors.$blue-500, 0.2)
+                                    );
                                 }
 
                                 &.xsx {
-                                    @include mixins.status-badge(colors.$status-success, functions.alpha(colors.$status-success, 0.1), functions.alpha(colors.$status-success, 0.2));
+                                    @include mixins.status-badge(
+                                        colors.$status-success,
+                                        functions.alpha(colors.$status-success, 0.1),
+                                        functions.alpha(colors.$status-success, 0.2)
+                                    );
                                 }
 
                                 &.ps4 {
@@ -641,7 +741,7 @@
                             position: relative;
 
                             :not(.dropdown-option) > &::before {
-                                content: '';
+                                content: "";
                                 opacity: 0;
                                 position: absolute;
                                 bottom: -25%;
@@ -679,18 +779,30 @@
                             }
 
                             &.in-stock {
-                            @include mixins.status-badge(colors.$status-success, functions.alpha(colors.$status-success, 0.1), functions.alpha(colors.$status-success, 0.2));
+                                @include mixins.status-badge(
+                                    colors.$status-success,
+                                    functions.alpha(colors.$status-success, 0.1),
+                                    functions.alpha(colors.$status-success, 0.2)
+                                );
                             }
 
                             &.low-stock {
-                                @include mixins.status-badge(colors.$status-warning, functions.alpha(colors.$status-warning, 0.1), functions.alpha(colors.$status-warning, 0.2));
+                                @include mixins.status-badge(
+                                    colors.$status-warning,
+                                    functions.alpha(colors.$status-warning, 0.1),
+                                    functions.alpha(colors.$status-warning, 0.2)
+                                );
                             }
 
                             &.out-of-stock {
-                                @include mixins.status-badge(colors.$status-error, functions.alpha(colors.$status-error, 0.1), functions.alpha(colors.$status-error, 0.2));
+                                @include mixins.status-badge(
+                                    colors.$status-error,
+                                    functions.alpha(colors.$status-error, 0.1),
+                                    functions.alpha(colors.$status-error, 0.2)
+                                );
                             }
                         }
-                        
+
                         .actions {
                             display: flex;
                             gap: 0.5rem;
@@ -793,7 +905,7 @@
             .page-controls {
                 display: flex;
                 align-items: center;
-                
+
                 .page-btn {
                     background: colors.$bg-card;
                     border: 1px solid colors.$border-divider;
@@ -812,7 +924,9 @@
 
                     &:focus-visible:not(:disabled) {
                         outline: none;
-                        box-shadow: 0 0 0 2px colors.$bg-card, 0 0 0 4px colors.$accent;
+                        box-shadow:
+                            0 0 0 2px colors.$bg-card,
+                            0 0 0 4px colors.$accent;
                     }
 
                     &:disabled {
@@ -949,7 +1063,7 @@
 
                     &:active {
                         &::placeholder {
-                            content: '';
+                            content: "";
                         }
                     }
 
