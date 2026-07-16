@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 const games = ref([
     {
@@ -105,9 +105,53 @@ const games = ref([
 ]);
 
 const searchTerm = ref("");
+const openDropdown = ref(null);
+const selectedPlatform = ref("all");
+const selectedRating = ref("all");
+const selectedStatus = ref("all");
+
+const toggleDropdown = (name) => {
+    if (openDropdown.value === name) {
+        openDropdown.value = null;
+    } else {
+        openDropdown.value = name;
+    }
+};
+
+const selectOption = (filterType, value) => {
+    if (filterType === "platform") selectedPlatform.value = value;
+    if (filterType === "rating") selectedRating.value = value;
+    if (filterType === "status") selectedStatus.value = value;
+    openDropdown.value = null;
+};
 
 const filteredGames = computed(() => {
-    return games.value.filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()));
+    return (
+        games.value
+            // 1. Search filter
+            .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
+            // 2. Platform filter
+            .filter((game) => {
+                if (selectedPlatform.value === "all") return true;
+                return game.platforms.includes(selectedPlatform.value);
+            })
+            // 3. Rating filter
+            .filter((game) => {
+                if (selectedRating.value === "all") return true;
+                if (selectedRating.value === "high") return game.rating >= 8.0;
+                if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
+                if (selectedRating.value === "low") return game.rating < 6.0;
+                return true;
+            })
+            // 4. Status filter
+            .filter((game) => {
+                if (selectedStatus.value === "all") return true;
+                if (selectedStatus.value === "in-stock") return game.stock > 0;
+                if (selectedStatus.value === "low-stock") return game.stock > 0 && game.stock < 50;
+                if (selectedStatus.value === "out-of-stock") return game.stock === 0;
+                return true;
+            })
+    );
 });
 
 const getRatingClass = (rating) => {
@@ -123,10 +167,27 @@ const getStockStatus = (stock) => {
 };
 
 const statusMap = {
+    all: "All Stock",
     "in-stock": "In Stock",
     "out-of-stock": "Out of Stock",
     "low-stock": "Low Stock",
 };
+
+// Close dropdowns when clicking outside
+const handleClickOutside = (event) => {
+    if (!event.target.closest(".custom-dropdown")) {
+        openDropdown.value = null;
+    }
+};
+
+// Add/remove event listener
+onMounted(() => {
+    document.addEventListener("click", handleClickOutside);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleClickOutside);
+});
 </script>
 
 <template>
@@ -140,56 +201,160 @@ const statusMap = {
                 </div>
             </div>
             <div class="filter-wrapper">
-                <div class="custom-dropdown" id="platform-dropdown">
-                    <button class="dropdown-trigger" id="platform-trigger">
-                        <span class="dropdown-selected-text">All Platforms</span>
+                <div class="custom-dropdown" id="platform-dropdown" :class="{ open: openDropdown === 'platform' }">
+                    <button @click="toggleDropdown('platform')" class="dropdown-trigger" id="platform-trigger">
+                        <span :class="selectedPlatform !== 'all' ? { platform: true, [selectedPlatform]: true } : ''" class="dropdown-selected-text">
+                            {{ selectedPlatform.toUpperCase() !== "ALL" ? selectedPlatform.toUpperCase() : "All Platforms" }}
+                        </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
                     <div class="dropdown-menu" id="platform-filter">
-                        <button class="dropdown-option platform-option active" data-platform="all">All Platforms</button>
-                        <button class="dropdown-option platform-option" data-platform="pc">
+                        <button
+                            @click="selectOption('platform', 'all')"
+                            :class="{ active: selectedPlatform === 'all' }"
+                            class="dropdown-option platform-option active"
+                            data-platform="all"
+                        >
+                            All Platforms
+                        </button>
+                        <button
+                            @click="selectOption('platform', 'pc')"
+                            :class="{ active: selectedPlatform === 'pc' }"
+                            class="dropdown-option platform-option"
+                            data-platform="pc"
+                        >
                             <span class="platform pc">PC</span>
                         </button>
-                        <button class="dropdown-option platform-option" data-platform="ps5">
+                        <button
+                            @click="selectOption('platform', 'ps5')"
+                            :class="{ active: selectedPlatform === 'ps5' }"
+                            class="dropdown-option platform-option"
+                            data-platform="ps5"
+                        >
                             <span class="platform ps5">PS5</span>
                         </button>
-                        <button class="dropdown-option platform-option" data-platform="ps4">
+                        <button
+                            @click="selectOption('platform', 'ps4')"
+                            :class="{ active: selectedPlatform === 'ps4' }"
+                            class="dropdown-option platform-option"
+                            data-platform="ps4"
+                        >
                             <span class="platform ps4">PS4</span>
                         </button>
-                        <button class="dropdown-option platform-option" data-platform="xsx">
+                        <button
+                            @click="selectOption('platform', 'xsx')"
+                            :class="{ active: selectedPlatform === 'xsx' }"
+                            class="dropdown-option platform-option"
+                            data-platform="xsx"
+                        >
                             <span class="platform xsx">XSX</span>
                         </button>
-                        <button class="dropdown-option platform-option" data-platform="nsw">
+                        <button
+                            @click="selectOption('platform', 'nsw')"
+                            :class="{ active: selectedPlatform === 'nsw' }"
+                            class="dropdown-option platform-option"
+                            data-platform="nsw"
+                        >
                             <span class="platform nsw">NSW</span>
                         </button>
                     </div>
                 </div>
-                <div class="custom-dropdown" id="rating-dropdown">
-                    <button class="dropdown-trigger" id="rating-trigger">
-                        <span class="dropdown-selected-text">All Ratings</span>
+                <div class="custom-dropdown" id="rating-dropdown" :class="{ open: openDropdown === 'rating' }">
+                    <button @click="toggleDropdown('rating')" class="dropdown-trigger" id="rating-trigger">
+                        <span
+                            class="dropdown-selected-text"
+                            :class="
+                                selectedRating === 'all' ? 'all' : selectedRating === 'high' ? 'high' : selectedRating === 'medium' ? 'medium' : 'low'
+                            "
+                        >
+                            {{
+                                selectedRating === "all"
+                                    ? "All Ratings"
+                                    : selectedRating === "high"
+                                      ? "High (&ge; 8.0)"
+                                      : selectedRating === "medium"
+                                        ? "Medium (6.0&ndash;7.9)"
+                                        : "Low (&le; 6.0)"
+                            }}
+                        </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
                     <div class="dropdown-menu" id="rating-filter">
-                        <button class="dropdown-option rating-option active" data-rating="all">All Ratings</button>
-                        <button class="dropdown-option rating-option" data-rating="high">High (&ge; 8.0)</button>
-                        <button class="dropdown-option rating-option" data-rating="medium">Medium (6.0&ndash;7.9)</button>
-                        <button class="dropdown-option rating-option" data-rating="low">Low (&le; 6.0)</button>
+                        <button
+                            @click="selectOption('rating', 'all')"
+                            :class="{ active: selectedRating === 'all' }"
+                            class="dropdown-option rating-option"
+                            data-rating="all"
+                        >
+                            All Ratings
+                        </button>
+                        <button
+                            @click="selectOption('rating', 'high')"
+                            :class="{ active: selectedRating === 'high' }"
+                            class="dropdown-option rating-option"
+                            data-rating="high"
+                        >
+                            High (&ge; 8.0)
+                        </button>
+                        <button
+                            @click="selectOption('rating', 'medium')"
+                            :class="{ active: selectedRating === 'medium' }"
+                            class="dropdown-option rating-option"
+                            data-rating="medium"
+                        >
+                            Medium (6.0&ndash;7.9)
+                        </button>
+                        <button
+                            @click="selectOption('rating', 'low')"
+                            :class="{ active: selectedRating === 'low' }"
+                            class="dropdown-option rating-option"
+                            data-rating="low"
+                        >
+                            Low (&le; 6.0)
+                        </button>
                     </div>
                 </div>
-                <div class="custom-dropdown" id="status-dropdown">
-                    <button class="dropdown-trigger" id="status-trigger">
-                        <span class="dropdown-selected-text">All Stock</span>
+                <div class="custom-dropdown" id="status-dropdown" :class="{ open: openDropdown === 'status' }">
+                    <button @click="toggleDropdown('status')" class="dropdown-trigger" id="status-trigger">
+                        <span
+                            class="dropdown-selected-text"
+                            :class="selectedStatus !== 'all' ? { 'status-badge': true, [selectedStatus]: true } : ''"
+                        >
+                            {{ statusMap[selectedStatus] }}
+                        </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
                     <div class="dropdown-menu" id="status-filter">
-                        <button class="dropdown-option status-option active" data-status="all">All Stock</button>
-                        <button class="dropdown-option status-option" data-status="instock">
+                        <button
+                            @click="selectOption('status', 'all')"
+                            :class="{ active: selectedStatus === 'all' }"
+                            class="dropdown-option status-option"
+                            data-status="all"
+                        >
+                            All Stock
+                        </button>
+                        <button
+                            @click="selectOption('status', 'in-stock')"
+                            :class="{ active: selectedStatus === 'in-stock' }"
+                            class="dropdown-option status-option"
+                            data-status="instock"
+                        >
                             <span class="status-badge in-stock">In Stock</span>
                         </button>
-                        <button class="dropdown-option status-option" data-status="lowstock">
+                        <button
+                            @click="selectOption('status', 'low-stock')"
+                            :class="{ active: selectedStatus === 'low-stock' }"
+                            class="dropdown-option status-option"
+                            data-status="lowstock"
+                        >
                             <span class="status-badge low-stock">Low Stock</span>
                         </button>
-                        <button class="dropdown-option status-option" data-status="outofstock">
+                        <button
+                            @click="selectOption('status', 'out-of-stock')"
+                            :class="{ active: selectedStatus === 'out-of-stock' }"
+                            class="dropdown-option status-option"
+                            data-status="outofstock"
+                        >
                             <span class="status-badge out-of-stock">Out of Stock</span>
                         </button>
                     </div>
@@ -436,7 +601,8 @@ const statusMap = {
             @at-root .custom-dropdown {
                 position: relative;
                 display: inline-flex;
-                width: 9rem;
+                width: fit-content;
+                min-width: 9rem;
 
                 .dropdown-trigger {
                     @include mixins.flex-between;
@@ -448,7 +614,9 @@ const statusMap = {
                     color: colors.$text-primary;
                     border-radius: variables.$radius;
                     padding: 0.5rem 1rem;
-                    width: inherit;
+                    min-width: 9rem;
+                    width: max-content;
+                    max-width: none;
                     height: 2.25rem;
                     font-size: 0.875rem;
                     font-weight: 500;
@@ -462,13 +630,17 @@ const statusMap = {
                     }
 
                     .dropdown-selected-text {
-                        width: max-content;
+                        display: inline-flex;
+                        align-items: center;
+                        white-space: nowrap;
+                        flex: 0 0 auto;
                     }
 
                     .dropdown-arrow {
                         transition: variables.$transition-smooth;
                         display: inline-flex;
                         align-items: center;
+                        flex-shrink: 0;
                     }
                 }
 
