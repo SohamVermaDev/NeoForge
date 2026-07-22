@@ -197,23 +197,22 @@ onUnmounted(() => {
                 <input v-model="searchTerm" type="text" placeholder="Search games..." class="search-input" />
                 <button class="reset">Reset All Filters</button>
                 <div class="add-game-container">
-                    <button id="add-game-btn" class="add-game-btn">+ Add New Game</button>
+                    <button class="add-game-btn">+ Add New Game</button>
                 </div>
             </div>
             <div class="filter-wrapper">
-                <div class="custom-dropdown" id="platform-dropdown" :class="{ open: openDropdown === 'platform' }">
-                    <button @click="toggleDropdown('platform')" class="dropdown-trigger" id="platform-trigger">
+                <div class="custom-dropdown" :class="{ open: openDropdown === 'platform' }">
+                    <button @click="toggleDropdown('platform')" class="dropdown-trigger">
                         <span :class="selectedPlatform !== 'all' ? { platform: true, [selectedPlatform]: true } : ''" class="dropdown-selected-text">
                             {{ selectedPlatform.toUpperCase() !== "ALL" ? selectedPlatform.toUpperCase() : "All Platforms" }}
                         </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
-                    <div class="dropdown-menu" id="platform-filter">
+                    <div class="dropdown-menu">
                         <button
                             @click="selectOption('platform', 'all')"
                             :class="{ active: selectedPlatform === 'all' }"
                             class="dropdown-option platform-option active"
-                            data-platform="all"
                         >
                             All Platforms
                         </button>
@@ -221,7 +220,6 @@ onUnmounted(() => {
                             @click="selectOption('platform', 'pc')"
                             :class="{ active: selectedPlatform === 'pc' }"
                             class="dropdown-option platform-option"
-                            data-platform="pc"
                         >
                             <span class="platform pc">PC</span>
                         </button>
@@ -229,7 +227,6 @@ onUnmounted(() => {
                             @click="selectOption('platform', 'ps5')"
                             :class="{ active: selectedPlatform === 'ps5' }"
                             class="dropdown-option platform-option"
-                            data-platform="ps5"
                         >
                             <span class="platform ps5">PS5</span>
                         </button>
@@ -237,7 +234,6 @@ onUnmounted(() => {
                             @click="selectOption('platform', 'ps4')"
                             :class="{ active: selectedPlatform === 'ps4' }"
                             class="dropdown-option platform-option"
-                            data-platform="ps4"
                         >
                             <span class="platform ps4">PS4</span>
                         </button>
@@ -245,7 +241,6 @@ onUnmounted(() => {
                             @click="selectOption('platform', 'xsx')"
                             :class="{ active: selectedPlatform === 'xsx' }"
                             class="dropdown-option platform-option"
-                            data-platform="xsx"
                         >
                             <span class="platform xsx">XSX</span>
                         </button>
@@ -253,14 +248,13 @@ onUnmounted(() => {
                             @click="selectOption('platform', 'nsw')"
                             :class="{ active: selectedPlatform === 'nsw' }"
                             class="dropdown-option platform-option"
-                            data-platform="nsw"
                         >
                             <span class="platform nsw">NSW</span>
                         </button>
                     </div>
                 </div>
-                <div class="custom-dropdown" id="rating-dropdown" :class="{ open: openDropdown === 'rating' }">
-                    <button @click="toggleDropdown('rating')" class="dropdown-trigger" id="rating-trigger">
+                <div class="custom-dropdown" :class="{ open: openDropdown === 'rating' }">
+                    <button @click="toggleDropdown('rating')" class="dropdown-trigger">
                         <span
                             class="dropdown-selected-text"
                             :class="
@@ -279,12 +273,11 @@ onUnmounted(() => {
                         </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
-                    <div class="dropdown-menu" id="rating-filter">
+                    <div class="dropdown-menu">
                         <button
                             @click="selectOption('rating', 'all')"
                             :class="{ active: selectedRating === 'all' }"
                             class="dropdown-option rating-option"
-                            data-rating="all"
                         >
                             All Ratings
                         </button>
@@ -292,7 +285,6 @@ onUnmounted(() => {
                             @click="selectOption('rating', 'high')"
                             :class="{ active: selectedRating === 'high' }"
                             class="dropdown-option rating-option"
-                            data-rating="high"
                         >
                             High (&ge; 8.0)
                         </button>
@@ -300,7 +292,6 @@ onUnmounted(() => {
                             @click="selectOption('rating', 'medium')"
                             :class="{ active: selectedRating === 'medium' }"
                             class="dropdown-option rating-option"
-                            data-rating="medium"
                         >
                             Medium (6.0&ndash;7.9)
                         </button>
@@ -308,14 +299,13 @@ onUnmounted(() => {
                             @click="selectOption('rating', 'low')"
                             :class="{ active: selectedRating === 'low' }"
                             class="dropdown-option rating-option"
-                            data-rating="low"
                         >
                             Low (&le; 6.0)
                         </button>
                     </div>
                 </div>
-                <div class="custom-dropdown" id="status-dropdown" :class="{ open: openDropdown === 'status' }">
-                    <button @click="toggleDropdown('status')" class="dropdown-trigger" id="status-trigger">
+                <div class="custom-dropdown" :class="{ open: openDropdown === 'status' }">
+                    <button @click="toggleDropdown('status')" class="dropdown-trigger">
                         <span
                             class="dropdown-selected-text"
                             :class="selectedStatus !== 'all' ? { 'status-badge': true, [selectedStatus]: true } : ''"
@@ -324,12 +314,11 @@ onUnmounted(() => {
                         </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
-                    <div class="dropdown-menu" id="status-filter">
+                    <div class="dropdown-menu">
                         <button
                             @click="selectOption('status', 'all')"
                             :class="{ active: selectedStatus === 'all' }"
                             class="dropdown-option status-option"
-                            data-status="all"
                         >
                             All Stock
                         </button>
@@ -337,7 +326,6 @@ onUnmounted(() => {
                             @click="selectOption('status', 'in-stock')"
                             :class="{ active: selectedStatus === 'in-stock' }"
                             class="dropdown-option status-option"
-                            data-status="instock"
                         >
                             <span class="status-badge in-stock">In Stock</span>
                         </button>
@@ -345,7 +333,6 @@ onUnmounted(() => {
                             @click="selectOption('status', 'low-stock')"
                             :class="{ active: selectedStatus === 'low-stock' }"
                             class="dropdown-option status-option"
-                            data-status="lowstock"
                         >
                             <span class="status-badge low-stock">Low Stock</span>
                         </button>
@@ -353,7 +340,6 @@ onUnmounted(() => {
                             @click="selectOption('status', 'out-of-stock')"
                             :class="{ active: selectedStatus === 'out-of-stock' }"
                             class="dropdown-option status-option"
-                            data-status="outofstock"
                         >
                             <span class="status-badge out-of-stock">Out of Stock</span>
                         </button>
@@ -365,14 +351,14 @@ onUnmounted(() => {
             <table class="game-table">
                 <thead>
                     <tr>
-                        <th class="sortable" data-sort-type="number" data-column="0">ID <i class="fa-solid fa-arrow-down-short-wide"></i></th>
-                        <th class="sortable" data-sort-type="string" data-column="1">Game Title <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th class="sortable">ID <i class="fa-solid fa-arrow-down-short-wide"></i></th>
+                        <th class="sortable">Game Title <i class="fa-solid fa-arrows-up-down"></i></th>
                         <th>Developer/Publisher</th>
                         <th>Genre</th>
-                        <th class="sortable" data-sort-type="number" data-column="4">Price <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th class="sortable">Price <i class="fa-solid fa-arrows-up-down"></i></th>
                         <th>Platform</th>
-                        <th class="sortable" data-sort-type="number" data-column="6">Rating <i class="fa-solid fa-arrows-up-down"></i></th>
-                        <th class="sortable" data-sort-type="number" data-column="7">Stock Status <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th class="sortable">Rating <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th class="sortable">Stock Status <i class="fa-solid fa-arrows-up-down"></i></th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -421,18 +407,16 @@ onUnmounted(() => {
             </table>
         </div>
         <div class="table-footer">
-            <div class="pagination-info">
-                Showing <span id="range-start">1</span>&dash;<span id="range-end">10</span> of <span id="total-filtered">0</span> games
-            </div>
+            <div class="pagination-info">Showing <span>1</span>&dash;<span>10</span> of <span>0</span> games</div>
             <div class="pagination-controls">
                 <div class="per-page">
                     <span>Show</span>
                     <div class="custom-dropdown" id="pagination-dropdown">
-                        <button class="dropdown-trigger" id="pagination-trigger">
+                        <button class="dropdown-trigger">
                             <span class="dropdown-selected-text">10</span>
                             <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                         </button>
-                        <div class="dropdown-menu" id="pagination-filter">
+                        <div class="dropdown-menu">
                             <button class="dropdown-option pagination-option">20</button>
                             <button class="dropdown-option pagination-option">15</button>
                             <button class="dropdown-option pagination-option active">10</button>
@@ -442,34 +426,34 @@ onUnmounted(() => {
                     <span>per page</span>
                 </div>
                 <div class="page-controls">
-                    <button id="prev-page" class="page-btn" disabled><i class="fa-solid fa-caret-left"></i></button>
-                    <button id="next-page" class="page-btn" disabled><i class="fa-solid fa-caret-right"></i></button>
+                    <button class="page-btn" disabled><i class="fa-solid fa-caret-left"></i></button>
+                    <button class="page-btn" disabled><i class="fa-solid fa-caret-right"></i></button>
                 </div>
             </div>
         </div>
     </div>
-    <div id="game-modal" class="modal-overlay">
+    <div class="modal-overlay">
         <div class="modal-content">
             <div class="modal-header">
                 <h2>Forge New Game</h2>
                 <button id="close-modal" class="modal-close">&times;</button>
             </div>
-            <form id="new-game-form">
+            <form>
                 <div class="form-group">
                     <label>Game Title *</label>
-                    <input type="text" id="game-title" required />
+                    <input type="text" required />
                 </div>
                 <div class="form-group">
                     <label>Developer/Publisher *</label>
-                    <input type="text" id="game-developer" required placeholder="e.g., Electronic Arts, Activision" />
+                    <input type="text" required placeholder="e.g., Electronic Arts, Activision" />
                 </div>
                 <div class="form-group">
                     <label>Genre *</label>
-                    <input type="text" id="game-genre" required placeholder="e.g., RPG, Action" />
+                    <input type="text" required placeholder="e.g., RPG, Action" />
                 </div>
                 <div class="form-group">
                     <label>Price ($) *</label>
-                    <input type="number" id="game-price" step="0.01" min="0" required />
+                    <input type="number" step="0.01" min="0" required />
                 </div>
                 <div class="form-group">
                     <label>Platforms *</label>
@@ -503,14 +487,14 @@ onUnmounted(() => {
                 </div>
                 <div class="form-group">
                     <label>Stock *</label>
-                    <input type="number" id="game-stock" min="0" required />
+                    <input type="number" min="0" required />
                 </div>
                 <div class="form-group">
                     <label>Rating (0-10)</label>
-                    <input type="number" id="game-rating" step="0.1" min="0.1" max="10" value="0" />
+                    <input type="number" step="0.1" min="0.1" max="10" value="0" />
                 </div>
                 <div class="form-actions">
-                    <button type="button" id="cancel-modal" class="cancel-btn">Cancel</button>
+                    <button type="button" class="cancel-btn">Cancel</button>
                     <button type="submit" class="save-btn">Add Game</button>
                 </div>
             </form>
