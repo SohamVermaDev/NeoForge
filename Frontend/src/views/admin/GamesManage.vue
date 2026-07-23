@@ -598,9 +598,8 @@ onUnmounted(() => {
                     color: colors.$text-primary;
                     border-radius: variables.$radius;
                     padding: 0.5rem 1rem;
-                    min-width: 9rem;
-                    width: max-content;
-                    max-width: none;
+                    min-width: inherit;
+                    // width: max-content;
                     height: 2.25rem;
                     font-size: 0.875rem;
                     font-weight: 500;
@@ -635,7 +634,7 @@ onUnmounted(() => {
                     position: absolute;
                     top: calc(100% + 8px);
                     left: 0;
-                    width: inherit;
+                    width: 100%;
                     border-radius: 14px;
                     padding: 0.5rem;
                     z-index: 100;
@@ -703,7 +702,7 @@ onUnmounted(() => {
                 }
 
                 &#pagination-dropdown {
-                    width: 5rem;
+                    min-width: 5rem;
                 }
 
                 &.open {
