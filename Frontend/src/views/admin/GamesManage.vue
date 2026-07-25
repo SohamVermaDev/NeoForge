@@ -180,6 +180,82 @@ const handleClickOutside = (event) => {
     }
 };
 
+const dropdownConfigs = [
+    {
+        id: "platform",
+        label: "All Platforms",
+        // selected: selectedPlatform.value,
+        selected: () => selectedPlatform.value,
+        selectHandler: (value) => selectOption("platform", value),
+        toggleHandler: () => toggleDropdown("platform"),
+        options: [
+            { value: "all", label: "All Platforms", type: "plain" },
+            { value: "pc", label: "PC", type: "chip", chipClass: "pc" },
+            { value: "ps5", label: "PS5", type: "chip", chipClass: "ps5" },
+            { value: "ps4", label: "PS4", type: "chip", chipClass: "ps4" },
+            { value: "xsx", label: "XSX", type: "chip", chipClass: "xsx" },
+            { value: "nsw", label: "NSW", type: "chip", chipClass: "nsw" },
+        ],
+        getDisplayText: (selected) => {
+            if (selected === "all") return "All Platforms";
+            return selected.toUpperCase();
+        },
+        getDisplayClass: (selected) => {
+            if (selected === "all") return "";
+            return { platform: true, [selected]: true };
+        },
+    },
+    {
+        id: "rating",
+        label: "All Ratings",
+        selected: () => selectedRating.value,
+        selectHandler: (value) => selectOption("rating", value),
+        toggleHandler: () => toggleDropdown("rating"),
+        options: [
+            { value: "all", label: "All Ratings", type: "plain" },
+            { value: "high", label: "High (≥ 8.0)", type: "plain" },
+            { value: "medium", label: "Medium (6.0–7.9)", type: "plain" },
+            { value: "low", label: "Low (≤ 6.0)", type: "plain" },
+        ],
+        getDisplayText: (selected) => {
+            const map = {
+                all: "All Ratings",
+                high: "High (≥ 8.0)",
+                medium: "Medium (6.0–7.9)",
+                low: "Low (≤ 6.0)",
+            };
+            return map[selected] || "All Ratings";
+        },
+        getDisplayClass: (selected) => {
+            const map = {
+                all: "all",
+                high: "high",
+                medium: "medium",
+                low: "low",
+            };
+            return map[selected] || "";
+        },
+    },
+    {
+        id: "status",
+        label: "All Stock",
+        selected: () => selectedStatus.value,
+        selectHandler: (value) => selectOption("status", value),
+        toggleHandler: () => toggleDropdown("status"),
+        options: [
+            { value: "all", label: "All Stock", type: "plain" },
+            { value: "in-stock", label: "In Stock", type: "badge", badgeClass: "in-stock" },
+            { value: "low-stock", label: "Low Stock", type: "badge", badgeClass: "low-stock" },
+            { value: "out-of-stock", label: "Out of Stock", type: "badge", badgeClass: "out-of-stock" },
+        ],
+        getDisplayText: (selected) => statusMap[selected] || "All Stock",
+        getDisplayClass: (selected) => {
+            if (selected === "all") return "";
+            return { "status-badge": true, [selected]: true };
+        },
+    },
+];
+
 // Add/remove event listener
 onMounted(() => {
     document.addEventListener("click", handleClickOutside);
@@ -201,147 +277,30 @@ onUnmounted(() => {
                 </div>
             </div>
             <div class="filter-wrapper">
-                <div class="custom-dropdown" :class="{ open: openDropdown === 'platform' }">
-                    <button @click="toggleDropdown('platform')" class="dropdown-trigger">
-                        <span :class="selectedPlatform !== 'all' ? { platform: true, [selectedPlatform]: true } : ''" class="dropdown-selected-text">
-                            {{ selectedPlatform.toUpperCase() !== "ALL" ? selectedPlatform.toUpperCase() : "All Platforms" }}
+                <div v-for="dropdown in dropdownConfigs" :key="dropdown.id" class="custom-dropdown" :class="{ open: openDropdown === dropdown.id }">
+                    <button @click="dropdown.toggleHandler()" class="dropdown-trigger">
+                        <span class="dropdown-selected-text" :class="dropdown.getDisplayClass(dropdown.selected())">
+                            {{ dropdown.getDisplayText(dropdown.selected()) }}
                         </span>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
                     <div class="dropdown-menu">
                         <button
-                            @click="selectOption('platform', 'all')"
-                            :class="{ active: selectedPlatform === 'all' }"
-                            class="dropdown-option platform-option active"
+                            v-for="option in dropdown.options"
+                            :key="option.value"
+                            @click="dropdown.selectHandler(option.value)"
+                            :class="{ active: dropdown.selected() === option.value }"
+                            class="dropdown-option"
                         >
-                            All Platforms
-                        </button>
-                        <button
-                            @click="selectOption('platform', 'pc')"
-                            :class="{ active: selectedPlatform === 'pc' }"
-                            class="dropdown-option platform-option"
-                        >
-                            <span class="platform pc">PC</span>
-                        </button>
-                        <button
-                            @click="selectOption('platform', 'ps5')"
-                            :class="{ active: selectedPlatform === 'ps5' }"
-                            class="dropdown-option platform-option"
-                        >
-                            <span class="platform ps5">PS5</span>
-                        </button>
-                        <button
-                            @click="selectOption('platform', 'ps4')"
-                            :class="{ active: selectedPlatform === 'ps4' }"
-                            class="dropdown-option platform-option"
-                        >
-                            <span class="platform ps4">PS4</span>
-                        </button>
-                        <button
-                            @click="selectOption('platform', 'xsx')"
-                            :class="{ active: selectedPlatform === 'xsx' }"
-                            class="dropdown-option platform-option"
-                        >
-                            <span class="platform xsx">XSX</span>
-                        </button>
-                        <button
-                            @click="selectOption('platform', 'nsw')"
-                            :class="{ active: selectedPlatform === 'nsw' }"
-                            class="dropdown-option platform-option"
-                        >
-                            <span class="platform nsw">NSW</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="custom-dropdown" :class="{ open: openDropdown === 'rating' }">
-                    <button @click="toggleDropdown('rating')" class="dropdown-trigger">
-                        <span
-                            class="dropdown-selected-text"
-                            :class="
-                                selectedRating === 'all' ? 'all' : selectedRating === 'high' ? 'high' : selectedRating === 'medium' ? 'medium' : 'low'
-                            "
-                        >
-                            {{
-                                selectedRating === "all"
-                                    ? "All Ratings"
-                                    : selectedRating === "high"
-                                      ? "High (&ge; 8.0)"
-                                      : selectedRating === "medium"
-                                        ? "Medium (6.0&ndash;7.9)"
-                                        : "Low (&le; 6.0)"
-                            }}
-                        </span>
-                        <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <button
-                            @click="selectOption('rating', 'all')"
-                            :class="{ active: selectedRating === 'all' }"
-                            class="dropdown-option rating-option"
-                        >
-                            All Ratings
-                        </button>
-                        <button
-                            @click="selectOption('rating', 'high')"
-                            :class="{ active: selectedRating === 'high' }"
-                            class="dropdown-option rating-option"
-                        >
-                            High (&ge; 8.0)
-                        </button>
-                        <button
-                            @click="selectOption('rating', 'medium')"
-                            :class="{ active: selectedRating === 'medium' }"
-                            class="dropdown-option rating-option"
-                        >
-                            Medium (6.0&ndash;7.9)
-                        </button>
-                        <button
-                            @click="selectOption('rating', 'low')"
-                            :class="{ active: selectedRating === 'low' }"
-                            class="dropdown-option rating-option"
-                        >
-                            Low (&le; 6.0)
-                        </button>
-                    </div>
-                </div>
-                <div class="custom-dropdown" :class="{ open: openDropdown === 'status' }">
-                    <button @click="toggleDropdown('status')" class="dropdown-trigger">
-                        <span
-                            class="dropdown-selected-text"
-                            :class="selectedStatus !== 'all' ? { 'status-badge': true, [selectedStatus]: true } : ''"
-                        >
-                            {{ statusMap[selectedStatus] }}
-                        </span>
-                        <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
-                    </button>
-                    <div class="dropdown-menu">
-                        <button
-                            @click="selectOption('status', 'all')"
-                            :class="{ active: selectedStatus === 'all' }"
-                            class="dropdown-option status-option"
-                        >
-                            All Stock
-                        </button>
-                        <button
-                            @click="selectOption('status', 'in-stock')"
-                            :class="{ active: selectedStatus === 'in-stock' }"
-                            class="dropdown-option status-option"
-                        >
-                            <span class="status-badge in-stock">In Stock</span>
-                        </button>
-                        <button
-                            @click="selectOption('status', 'low-stock')"
-                            :class="{ active: selectedStatus === 'low-stock' }"
-                            class="dropdown-option status-option"
-                        >
-                            <span class="status-badge low-stock">Low Stock</span>
-                        </button>
-                        <button
-                            @click="selectOption('status', 'out-of-stock')"
-                            :class="{ active: selectedStatus === 'out-of-stock' }"
-                            class="dropdown-option status-option"
-                        >
-                            <span class="status-badge out-of-stock">Out of Stock</span>
+                            <span v-if="option.type === 'chip'" :class="['platform', option.chipClass]">
+                                {{ option.label }}
+                            </span>
+                            <span v-else-if="option.type === 'badge'" :class="['status-badge', option.badgeClass]">
+                                {{ option.label }}
+                            </span>
+                            <span v-else>
+                                {{ option.label }}
+                            </span>
                         </button>
                     </div>
                 </div>
