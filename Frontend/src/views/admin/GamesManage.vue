@@ -576,6 +576,13 @@ onUnmounted(() => {
                         align-items: center;
                         white-space: nowrap;
                         flex: 0 0 auto;
+
+                        &.status-badge {
+                            &::before,
+                            &::after {
+                                display: none;
+                            }
+                        }
                     }
 
                     .dropdown-arrow {
@@ -655,6 +662,13 @@ onUnmounted(() => {
                             &:hover {
                                 background: functions.alpha(colors.$accent, 0.05);
                                 color: colors.$text-primary;
+                            }
+                        }
+
+                        .status-badge {
+                            &::before,
+                            &::after {
+                                display: none;
                             }
                         }
                     }
@@ -860,7 +874,7 @@ onUnmounted(() => {
                             user-select: none;
                             position: relative;
 
-                            :not(.dropdown-option) > &::before {
+                            &::before {
                                 content: "";
                                 opacity: 0;
                                 position: absolute;
@@ -874,7 +888,7 @@ onUnmounted(() => {
                                 transition: opacity 0.3s ease;
                             }
 
-                            :not(.dropdown-option) > &::after {
+                            &::after {
                                 content: attr(stock);
                                 opacity: 0;
                                 position: absolute;
