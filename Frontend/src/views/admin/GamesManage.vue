@@ -106,7 +106,7 @@ const games = ref([
 
 const searchTerm = ref("");
 const openDropdown = ref(null);
-const selectedPlatform = ref("all");
+const selectedPlatform = ref([]);
 const selectedRating = ref("all");
 const selectedStatus = ref("all");
 
@@ -119,7 +119,18 @@ const toggleDropdown = (name) => {
 };
 
 const selectOption = (filterType, value) => {
-    if (filterType === "platform") selectedPlatform.value = value;
+    if (filterType === "platform") {
+        if (value === "all") {
+            selectedPlatform.value = [];
+        } else {
+            const idx = selectedPlatform.value.indexOf(value);
+            if (idx > -1) {
+                selectedPlatform.value.splice(idx, 1);
+            } else {
+                selectedPlatform.value.push(value);
+            }
+        }
+    }
     if (filterType === "rating") selectedRating.value = value;
     if (filterType === "status") selectedStatus.value = value;
     openDropdown.value = null;
@@ -132,8 +143,8 @@ const filteredGames = computed(() => {
             .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
             // 2. Platform filter
             .filter((game) => {
-                if (selectedPlatform.value === "all") return true;
-                return game.platforms.includes(selectedPlatform.value);
+                if (selectedPlatform.value.length === 0) return true;
+                return game.platforms.some((p) => selectedPlatform.value.includes(p));
             })
             // 3. Rating filter
             .filter((game) => {
@@ -183,6 +194,7 @@ const handleClickOutside = (event) => {
 const dropdownConfigs = [
     {
         id: "platform",
+        multi: true,
         label: "All Platforms",
         // selected: selectedPlatform.value,
         selected: () => selectedPlatform.value,
@@ -196,17 +208,14 @@ const dropdownConfigs = [
             { value: "xsx", label: "XSX", type: "chip", chipClass: "xsx" },
             { value: "nsw", label: "NSW", type: "chip", chipClass: "nsw" },
         ],
-        getDisplayText: (selected) => {
-            if (selected === "all") return "All Platforms";
-            return selected.toUpperCase();
-        },
+        getDisplayText: (selected) => selected.toUpperCase(),
         getDisplayClass: (selected) => {
-            if (selected === "all") return "";
             return { platform: true, [selected]: true };
         },
     },
     {
         id: "rating",
+        multi: false,
         label: "All Ratings",
         selected: () => selectedRating.value,
         selectHandler: (value) => selectOption("rating", value),
@@ -238,6 +247,7 @@ const dropdownConfigs = [
     },
     {
         id: "status",
+        multi: false,
         label: "All Stock",
         selected: () => selectedStatus.value,
         selectHandler: (value) => selectOption("status", value),
@@ -279,29 +289,57 @@ onUnmounted(() => {
             <div class="filter-wrapper">
                 <div v-for="dropdown in dropdownConfigs" :key="dropdown.id" class="custom-dropdown" :class="{ open: openDropdown === dropdown.id }">
                     <button @click="dropdown.toggleHandler()" class="dropdown-trigger">
-                        <span class="dropdown-selected-text" :class="dropdown.getDisplayClass(dropdown.selected())">
+                        <span v-if="!dropdown.multi" class="dropdown-selected-text" :class="dropdown.getDisplayClass(dropdown.selected())">
                             {{ dropdown.getDisplayText(dropdown.selected()) }}
                         </span>
+                        <div v-else class="dropdown-selected-text">
+                            <template v-if="dropdown.selected().length === 0">
+                                {{ dropdown.label }}
+                            </template>
+                            <template v-else v-for="(item, index) in dropdown.selected()" :key="item">
+                                <span :class="dropdown.getDisplayClass(item)">
+                                    {{ dropdown.getDisplayText(item) }}
+                                </span>
+                                <span v-if="index < dropdown.selected().length - 1" class="or-text">OR</span>
+                            </template>
+                        </div>
                         <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                     </button>
                     <div class="dropdown-menu">
-                        <button
-                            v-for="option in dropdown.options"
-                            :key="option.value"
-                            @click="dropdown.selectHandler(option.value)"
-                            :class="{ active: dropdown.selected() === option.value }"
-                            class="dropdown-option"
-                        >
-                            <span v-if="option.type === 'chip'" :class="['platform', option.chipClass]">
-                                {{ option.label }}
-                            </span>
-                            <span v-else-if="option.type === 'badge'" :class="['status-badge', option.badgeClass]">
-                                {{ option.label }}
-                            </span>
-                            <span v-else>
-                                {{ option.label }}
-                            </span>
-                        </button>
+                        <template v-if="!dropdown.multi">
+                            <button
+                                v-for="option in dropdown.options"
+                                :key="option.value"
+                                @click="dropdown.selectHandler(option.value)"
+                                :class="{ active: dropdown.selected() === option.value }"
+                                class="dropdown-option"
+                            >
+                                <span v-if="option.type === 'chip'" :class="['platform', option.chipClass]">
+                                    {{ option.label }}
+                                </span>
+                                <span v-else-if="option.type === 'badge'" :class="['status-badge', option.badgeClass]">
+                                    {{ option.label }}
+                                </span>
+                                <span v-else>
+                                    {{ option.label }}
+                                </span>
+                            </button>
+                        </template>
+                        <template v-else>
+                            <button
+                                v-for="option in dropdown.options"
+                                :key="option.value"
+                                @click="dropdown.selectHandler(option.value)"
+                                :class="{
+                                    active: option.value === 'all' ? dropdown.selected().length === 0 : dropdown.selected().includes(option.value),
+                                }"
+                                class="dropdown-option"
+                            >
+                                <span :class="option.chipClass ? ['platform', option.chipClass] : ''">
+                                    {{ option.label }}
+                                </span>
+                            </button>
+                        </template>
                     </div>
                 </div>
             </div>
@@ -573,6 +611,8 @@ onUnmounted(() => {
 
                     .dropdown-selected-text {
                         display: inline-flex;
+                        justify-content: center;
+                        gap: 0.5rem;
                         align-items: center;
                         white-space: nowrap;
                         flex: 0 0 auto;
@@ -582,6 +622,11 @@ onUnmounted(() => {
                             &::after {
                                 display: none;
                             }
+                        }
+
+                        div {
+                            @include mixins.flex-center;
+                            gap: 0.5rem;
                         }
                     }
 
