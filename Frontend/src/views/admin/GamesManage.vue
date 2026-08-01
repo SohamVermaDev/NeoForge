@@ -110,6 +110,10 @@ const selectedPlatform = ref([]);
 const selectedRating = ref("all");
 const selectedStatus = ref("all");
 
+const resetFilters = () => {
+    ((searchTerm.value = ""), (selectedPlatform.value = []), (selectedRating.value = "all"), (selectedStatus.value = "all"));
+};
+
 const toggleDropdown = (name) => {
     if (openDropdown.value === name) {
         openDropdown.value = null;
@@ -272,7 +276,7 @@ onUnmounted(() => {
         <div class="table-controls">
             <div class="search-wrapper">
                 <input v-model="searchTerm" type="text" placeholder="Search games..." class="search-input" />
-                <button class="reset">Reset All Filters</button>
+                <button class="reset" @click="resetFilters()">Reset All Filters</button>
                 <div class="add-game-container">
                     <button class="add-game-btn">+ Add New Game</button>
                 </div>
