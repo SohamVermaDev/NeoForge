@@ -302,7 +302,7 @@ onUnmounted(() => {
                                 v-for="option in dropdown.options"
                                 :key="option.value"
                                 @click="dropdown.selectHandler(option.value)"
-                                :class="{ active: dropdown.selected() === option.value }"
+                                :class="[{ active: dropdown.selected() === option.value }, { 'is-all': option.value === 'all' }]"
                                 class="dropdown-option"
                             >
                                 <span v-if="option.type === 'chip'" :class="['platform', option.chipClass]">
@@ -311,7 +311,7 @@ onUnmounted(() => {
                                 <span v-else-if="option.type === 'badge'" :class="['status-badge', option.badgeClass]">
                                     {{ option.label }}
                                 </span>
-                                <span v-else>
+                                <span v-else :class="option.chipClass ? ['platform', option.chipClass] : ''">
                                     {{ option.label }}
                                 </span>
                             </button>
@@ -321,9 +321,13 @@ onUnmounted(() => {
                                 v-for="option in dropdown.options"
                                 :key="option.value"
                                 @click="dropdown.selectHandler(option.value)"
-                                :class="{
-                                    active: option.value === 'all' ? dropdown.selected().length === 0 : dropdown.selected().includes(option.value),
-                                }"
+                                :class="[
+                                    {
+                                        active:
+                                            option.value === 'all' ? dropdown.selected().length === 0 : dropdown.selected().includes(option.value),
+                                    },
+                                    { 'is-all': option.value === 'all' },
+                                ]"
                                 class="dropdown-option"
                             >
                                 <span :class="option.chipClass ? ['platform', option.chipClass] : ''">
@@ -688,7 +692,7 @@ onUnmounted(() => {
                             }
                         }
 
-                        &[data-platform="all"] {
+                        &.is-all {
                             color: colors.$text-secondary;
                             font-weight: 400;
 
