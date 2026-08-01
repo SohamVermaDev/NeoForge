@@ -137,32 +137,26 @@ const selectOption = (filterType, value) => {
 };
 
 const filteredGames = computed(() => {
-    return (
-        games.value
-            // 1. Search filter
-            .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
-            // 2. Platform filter
-            .filter((game) => {
-                if (selectedPlatform.value.length === 0) return true;
-                return game.platforms.some((p) => selectedPlatform.value.includes(p));
-            })
-            // 3. Rating filter
-            .filter((game) => {
-                if (selectedRating.value === "all") return true;
-                if (selectedRating.value === "high") return game.rating >= 8.0;
-                if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
-                if (selectedRating.value === "low") return game.rating < 6.0;
-                return true;
-            })
-            // 4. Status filter
-            .filter((game) => {
-                if (selectedStatus.value === "all") return true;
-                if (selectedStatus.value === "in-stock") return game.stock > 0;
-                if (selectedStatus.value === "low-stock") return game.stock > 0 && game.stock < 50;
-                if (selectedStatus.value === "out-of-stock") return game.stock === 0;
-                return true;
-            })
-    );
+    return games.value
+        .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        .filter((game) => {
+            if (selectedPlatform.value.length === 0) return true;
+            return game.platforms.some((p) => selectedPlatform.value.includes(p));
+        })
+        .filter((game) => {
+            if (selectedRating.value === "all") return true;
+            if (selectedRating.value === "high") return game.rating >= 8.0;
+            if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
+            if (selectedRating.value === "low") return game.rating < 6.0;
+            return true;
+        })
+        .filter((game) => {
+            if (selectedStatus.value === "all") return true;
+            if (selectedStatus.value === "in-stock") return game.stock > 0;
+            if (selectedStatus.value === "low-stock") return game.stock > 0 && game.stock < 50;
+            if (selectedStatus.value === "out-of-stock") return game.stock === 0;
+            return true;
+        });
 });
 
 const getRatingClass = (rating) => {
@@ -184,7 +178,6 @@ const statusMap = {
     "low-stock": "Low Stock",
 };
 
-// Close dropdowns when clicking outside
 const handleClickOutside = (event) => {
     if (!event.target.closest(".custom-dropdown")) {
         openDropdown.value = null;
@@ -196,7 +189,6 @@ const dropdownConfigs = [
         id: "platform",
         multi: true,
         label: "All Platforms",
-        // selected: selectedPlatform.value,
         selected: () => selectedPlatform.value,
         selectHandler: (value) => selectOption("platform", value),
         toggleHandler: () => toggleDropdown("platform"),
@@ -266,7 +258,6 @@ const dropdownConfigs = [
     },
 ];
 
-// Add/remove event listener
 onMounted(() => {
     document.addEventListener("click", handleClickOutside);
 });
@@ -500,11 +491,9 @@ onUnmounted(() => {
 </template>
 
 <style scoped lang="scss">
-/* Table wrapper for horizontal scroll on small screens */
 .table-wrapper {
     transition: variables.$transition-smooth;
     position: relative;
-    // margin-left: 17.5rem;
     padding: 1rem 1rem;
     overflow-x: visible;
 
@@ -596,7 +585,6 @@ onUnmounted(() => {
                     border-radius: variables.$radius;
                     padding: 0.5rem 1rem;
                     min-width: inherit;
-                    // width: max-content;
                     height: 2.25rem;
                     font-size: 0.875rem;
                     font-weight: 500;
@@ -1052,7 +1040,6 @@ onUnmounted(() => {
 
             span {
                 font-weight: 700;
-                // font-style: italic;
                 font-size: 0.9rem;
                 color: colors.$text-primary;
                 background: functions.alpha(colors.$accent, 0.1);
