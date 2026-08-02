@@ -113,6 +113,20 @@ const selectedStatus = ref("all");
 const sortBy = ref("id");
 const sortDirection = ref("asc");
 
+const currentPage = ref(1);
+const perPage = ref(5);
+const perPageOptions = [5, 10, 15, 20];
+
+const totalItems = computed(() => sortedGames.value.length);
+const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value));
+const rangeStart = computed(() => (currentPage.value - 1) * perPage.value + 1);
+const rangeEnd = computed(() => Math.min(currentPage.value * perPage.value, totalItems.value));
+
+const setPerPage = (value) => {
+    perPage.value = value;
+    currentPage.value = 1;
+};
+
 const getSortIconClass = (column) => {
     if (sortBy.value !== column) {
         return ["fa-solid", "fa-arrows-up-down"];
@@ -136,12 +150,14 @@ const resetFilters = () => {
 
 watch(searchTerm, () => {
     localStorage.setItem("savedSearchTerm", searchTerm.value);
+    currentPage.value = 1;
 });
 
 watch(
     selectedPlatform,
     () => {
         localStorage.setItem("savedSelectedPlatform", JSON.stringify(selectedPlatform.value));
+        currentPage.value = 1;
     },
     { deep: true }
 );
@@ -150,6 +166,7 @@ watch(
     selectedRating,
     () => {
         localStorage.setItem("savedSelectedRating", selectedRating.value);
+        currentPage.value = 1;
     },
     { deep: true }
 );
@@ -158,6 +175,7 @@ watch(
     selectedStatus,
     () => {
         localStorage.setItem("savedSelectedStatus", selectedStatus.value);
+        currentPage.value = 1;
     },
     { deep: true }
 );
@@ -166,6 +184,7 @@ watch(
     sortBy,
     () => {
         localStorage.setItem("savedSortBy", sortBy.value);
+        currentPage.value = 1;
     },
     { deep: true }
 );
@@ -174,9 +193,19 @@ watch(
     sortDirection,
     () => {
         localStorage.setItem("savedSortDirection", sortDirection.value);
+        currentPage.value = 1;
     },
     { deep: true }
 );
+
+watch(perPage, () => {
+    localStorage.setItem("savedPerPage", perPage.value);
+    currentPage.value = 1;
+});
+
+watch(currentPage, () => {
+    localStorage.setItem("savedCurrentPage", currentPage.value);
+});
 
 const toggleDropdown = (name) => {
     if (openDropdown.value === name) {
@@ -244,6 +273,12 @@ const sortedGames = computed(() => {
         });
     }
     return sorted;
+});
+
+const paginatedGames = computed(() => {
+    const start = (currentPage.value - 1) * perPage.value;
+    const end = start + perPage.value;
+    return sortedGames.value.slice(start, end);
 });
 
 const getRatingClass = (rating) => {
@@ -377,6 +412,16 @@ onMounted(() => {
     if (savedSortDirection !== null) {
         sortDirection.value = savedSortDirection;
     }
+
+    const savedPerPage = localStorage.getItem("savedPerPage");
+    if (savedPerPage !== null) {
+        perPage.value = parseInt(savedPerPage);
+    }
+
+    const savedCurrentPage = localStorage.getItem("savedCurrentPage");
+    if (savedCurrentPage !== null) {
+        currentPage.value = parseInt(savedCurrentPage);
+    }
 });
 
 onUnmounted(() => {
@@ -482,7 +527,7 @@ onUnmounted(() => {
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="game in sortedGames" :key="game.id">
+                    <tr v-for="game in paginatedGames" :key="game.id">
                         <td>{{ game.id }}</td>
                         <td>{{ game.title }}</td>
                         <td>{{ game.developer }}</td>
@@ -526,27 +571,44 @@ onUnmounted(() => {
             </table>
         </div>
         <div class="table-footer">
-            <div class="pagination-info">Showing <span>1</span>&dash;<span>10</span> of <span>0</span> games</div>
+            <div class="pagination-info">
+                Showing <span>{{ rangeStart }}</span
+                >&dash;<span>{{ rangeEnd }}</span> of <span>{{ totalItems }}</span> games
+            </div>
             <div class="pagination-controls">
                 <div class="per-page">
                     <span>Show</span>
-                    <div class="custom-dropdown" id="pagination-dropdown">
+                    <div
+                        class="custom-dropdown"
+                        id="pagination-dropdown"
+                        @click="toggleDropdown('pagination')"
+                        :class="{ open: openDropdown === 'pagination' }"
+                    >
                         <button class="dropdown-trigger">
-                            <span class="dropdown-selected-text">10</span>
+                            <span class="dropdown-selected-text">{{ perPage }}</span>
                             <span class="dropdown-arrow"><i class="fa-solid fa-angle-down"></i></span>
                         </button>
                         <div class="dropdown-menu">
-                            <button class="dropdown-option pagination-option">20</button>
-                            <button class="dropdown-option pagination-option">15</button>
-                            <button class="dropdown-option pagination-option active">10</button>
-                            <button class="dropdown-option pagination-option">5</button>
+                            <button
+                                v-for="option in perPageOptions"
+                                :key="option"
+                                class="dropdown-option pagination-option"
+                                :class="{ active: perPage === option }"
+                                @click="setPerPage(option)"
+                            >
+                                {{ option }}
+                            </button>
                         </div>
                     </div>
                     <span>per page</span>
                 </div>
                 <div class="page-controls">
-                    <button class="page-btn" disabled><i class="fa-solid fa-caret-left"></i></button>
-                    <button class="page-btn" disabled><i class="fa-solid fa-caret-right"></i></button>
+                    <button class="page-btn" @click="currentPage--" :disabled="currentPage === 1">
+                        <i class="fa-solid fa-caret-left"></i>
+                    </button>
+                    <button class="page-btn" @click="currentPage++" :disabled="currentPage === totalPages">
+                        <i class="fa-solid fa-caret-right"></i>
+                    </button>
                 </div>
             </div>
         </div>
