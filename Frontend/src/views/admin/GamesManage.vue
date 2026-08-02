@@ -110,6 +110,26 @@ const selectedPlatform = ref([]);
 const selectedRating = ref("all");
 const selectedStatus = ref("all");
 
+const sortBy = ref("id");
+const sortDirection = ref("asc");
+
+const getSortIconClass = (column) => {
+    if (sortBy.value !== column) {
+        return ["fa-solid", "fa-arrows-up-down"];
+    }
+
+    return sortDirection.value === "asc" ? ["fa-solid", "fa-arrow-down-short-wide"] : ["fa-solid", "fa-arrow-up-short-wide"];
+};
+
+const handleSort = (column) => {
+    if (sortBy.value === column) {
+        sortDirection.value = sortDirection.value === "asc" ? "desc" : "asc";
+    } else {
+        sortBy.value = column;
+        sortDirection.value = "asc";
+    }
+};
+
 const resetFilters = () => {
     ((searchTerm.value = ""), (selectedPlatform.value = []), (selectedRating.value = "all"), (selectedStatus.value = "all"));
 };
@@ -138,6 +158,22 @@ watch(
     selectedStatus,
     () => {
         localStorage.setItem("savedSelectedStatus", selectedStatus.value);
+    },
+    { deep: true }
+);
+
+watch(
+    sortBy,
+    () => {
+        localStorage.setItem("savedSortBy", sortBy.value);
+    },
+    { deep: true }
+);
+
+watch(
+    sortDirection,
+    () => {
+        localStorage.setItem("savedSortDirection", sortDirection.value);
     },
     { deep: true }
 );
@@ -189,6 +225,25 @@ const filteredGames = computed(() => {
             if (selectedStatus.value === "out-of-stock") return game.stock === 0;
             return true;
         });
+});
+
+const sortedGames = computed(() => {
+    const sorted = [...filteredGames.value];
+    if (sortBy.value) {
+        sorted.sort((a, b) => {
+            let valA = a[sortBy.value];
+            let valB = b[sortBy.value];
+
+            if (typeof valA === "string") {
+                valA = valA.toLowerCase();
+                valB = valB.toLowerCase();
+            }
+            if (valA < valB) return sortDirection.value === "asc" ? -1 : 1;
+            if (valA > valB) return sortDirection.value === "asc" ? 1 : -1;
+            return 0;
+        });
+    }
+    return sorted;
 });
 
 const getRatingClass = (rating) => {
@@ -312,6 +367,16 @@ onMounted(() => {
     if (savedSelectedStatus !== null) {
         selectedStatus.value = savedSelectedStatus;
     }
+
+    const savedSortBy = localStorage.getItem("savedSortBy");
+    if (savedSortBy !== null) {
+        sortBy.value = savedSortBy;
+    }
+
+    const savedSortDirection = localStorage.getItem("savedSortDirection");
+    if (savedSortDirection !== null) {
+        sortDirection.value = savedSortDirection;
+    }
 });
 
 onUnmounted(() => {
@@ -395,19 +460,29 @@ onUnmounted(() => {
             <table class="game-table">
                 <thead>
                     <tr>
-                        <th class="sortable">ID <i class="fa-solid fa-arrow-down-short-wide"></i></th>
-                        <th class="sortable">Game Title <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th :class="['sortable', { active: sortBy === 'id' }]" @click="handleSort('id')">
+                            ID <i :class="getSortIconClass('id')"></i>
+                        </th>
+                        <th :class="['sortable', { active: sortBy === 'title' }]" @click="handleSort('title')">
+                            Game Title <i :class="getSortIconClass('title')"></i>
+                        </th>
                         <th>Developer/Publisher</th>
                         <th>Genre</th>
-                        <th class="sortable">Price <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th :class="['sortable', { active: sortBy === 'price' }]" @click="handleSort('price')">
+                            Price <i :class="getSortIconClass('price')"></i>
+                        </th>
                         <th>Platform</th>
-                        <th class="sortable">Rating <i class="fa-solid fa-arrows-up-down"></i></th>
-                        <th class="sortable">Stock Status <i class="fa-solid fa-arrows-up-down"></i></th>
+                        <th :class="['sortable', { active: sortBy === 'rating' }]" @click="handleSort('rating')">
+                            Rating <i :class="getSortIconClass('rating')"></i>
+                        </th>
+                        <th :class="['sortable', { active: sortBy === 'stock' }]" @click="handleSort('stock')">
+                            Stock Status <i :class="getSortIconClass('stock')"></i>
+                        </th>
                         <th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="game in filteredGames" :key="game.id">
+                    <tr v-for="game in sortedGames" :key="game.id">
                         <td>{{ game.id }}</td>
                         <td>{{ game.title }}</td>
                         <td>{{ game.developer }}</td>
@@ -834,7 +909,7 @@ onUnmounted(() => {
                             }
                         }
 
-                        &:first-child {
+                        &.active {
                             i {
                                 opacity: 1;
                             }
