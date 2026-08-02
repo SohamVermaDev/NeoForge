@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, onUnmounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 
 const games = ref([
     {
@@ -113,6 +113,34 @@ const selectedStatus = ref("all");
 const resetFilters = () => {
     ((searchTerm.value = ""), (selectedPlatform.value = []), (selectedRating.value = "all"), (selectedStatus.value = "all"));
 };
+
+watch(searchTerm, () => {
+    localStorage.setItem("savedSearchTerm", searchTerm.value);
+});
+
+watch(
+    selectedPlatform,
+    () => {
+        localStorage.setItem("savedSelectedPlatform", JSON.stringify(selectedPlatform.value));
+    },
+    { deep: true }
+);
+
+watch(
+    selectedRating,
+    () => {
+        localStorage.setItem("savedSelectedRating", selectedRating.value);
+    },
+    { deep: true }
+);
+
+watch(
+    selectedStatus,
+    () => {
+        localStorage.setItem("savedSelectedStatus", selectedStatus.value);
+    },
+    { deep: true }
+);
 
 const toggleDropdown = (name) => {
     if (openDropdown.value === name) {
@@ -264,6 +292,26 @@ const dropdownConfigs = [
 
 onMounted(() => {
     document.addEventListener("click", handleClickOutside);
+
+    const savedSearchTerm = localStorage.getItem("savedSearchTerm");
+    if (savedSearchTerm !== null) {
+        searchTerm.value = savedSearchTerm;
+    }
+
+    const savedSelectedPlatform = localStorage.getItem("savedSelectedPlatform");
+    if (savedSelectedPlatform !== null) {
+        selectedPlatform.value = JSON.parse(savedSelectedPlatform);
+    }
+
+    const savedSelectedRating = localStorage.getItem("savedSelectedRating");
+    if (savedSelectedRating !== null) {
+        selectedRating.value = savedSelectedRating;
+    }
+
+    const savedSelectedStatus = localStorage.getItem("savedSelectedStatus");
+    if (savedSelectedStatus !== null) {
+        selectedStatus.value = savedSelectedStatus;
+    }
 });
 
 onUnmounted(() => {
