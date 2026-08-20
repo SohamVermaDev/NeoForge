@@ -24,6 +24,8 @@ export const useAuthStore = defineStore("auth", () => {
                 email: data.email,
                 role: data.role,
             };
+            localStorage.setItem("token", token.value);
+            localStorage.setItem("user", JSON.stringify(user.value));
             return { success: true };
         } catch (error) {
             throw error;
@@ -33,6 +35,17 @@ export const useAuthStore = defineStore("auth", () => {
     function logout() {
         token.value = null;
         user.value = null;
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
+    }
+
+    function loadFromLocalStorage() {
+        const storedToken = localStorage.getItem("token");
+        const storedUser = localStorage.getItem("user");
+        if (storedToken && storedUser) {
+            token.value = storedToken;
+            user.value = JSON.parse(storedUser);
+        }
     }
 
     return {
@@ -43,5 +56,6 @@ export const useAuthStore = defineStore("auth", () => {
         register,
         login,
         logout,
+        loadFromLocalStorage,
     };
 });
