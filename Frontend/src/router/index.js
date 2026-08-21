@@ -36,8 +36,12 @@ router.beforeEach((to) => {
 
     if (to.path.startsWith("/admin") && !authStore.isAuthenticated && !authStore.isAdmin) {
         return "/login";
-    } else {
-        return;
     }
+
+    if ((to.path === "/login" || to.path === "/register") && authStore.isAuthenticated && authStore.isAdmin) {
+        return "/admin";
+    }
+
+    return true;
 });
 export default router;
