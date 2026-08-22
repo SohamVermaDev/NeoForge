@@ -1,5 +1,10 @@
 <script setup>
 import { reactive, ref } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 const props = defineProps({
     mode: {
@@ -17,8 +22,44 @@ const form = reactive({
 
 const showPassword = ref(false);
 
-const handleSubmit = () => {
-    // TODO: Implement auth logic
+const message = reactive({
+    text: "",
+    visible: false,
+});
+
+const setMessage = (text) => {
+    message.text = text;
+    message.visible = true;
+};
+
+const clearMessage = () => {
+    message.text = "";
+    message.visible = false;
+};
+
+const handleSubmit = async () => {
+    clearMessage();
+
+    try {
+        if (props.mode === "login") {
+            await authStore.login(form.email, form.password);
+            setMessage("Welcome back!");
+
+            setTimeout(() => {
+                router.push("/dashboard");
+            }, 1500);
+        } else {
+            await authStore.register(form.username, form.email, form.password);
+
+            setTimeout(() => {
+                router.push("/login");
+            }, 1500);
+
+            setMessage("Account created successfully!");
+        }
+    } catch (error) {
+        setMessage("Something when wrong! Please try again.");
+    }
 };
 </script>
 
@@ -61,6 +102,10 @@ const handleSubmit = () => {
                         <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                     </button>
                 </div>
+            </div>
+
+            <div v-if="message.visible" class="message-box error">
+                {{ message.text }}
             </div>
 
             <button type="submit" class="submit-btn">
@@ -169,6 +214,31 @@ const handleSubmit = () => {
                             0 0 0 4px colors.$accent;
                         border-radius: 4px;
                     }
+                }
+            }
+        }
+
+        .message-box {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.6rem 1rem;
+            border-radius: variables.$radius;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin: 0.25rem 0 0.5rem;
+            border-left: 3px solid transparent;
+            transition: variables.$transition-smooth;
+
+            &.error {
+                background: functions.alpha(colors.$status-error, 0.08);
+                border-left-color: colors.$status-error;
+                color: colors.$status-error;
+
+                &::before {
+                    content: "⚠";
+                    font-size: 1rem;
+                    flex-shrink: 0;
                 }
             }
         }
