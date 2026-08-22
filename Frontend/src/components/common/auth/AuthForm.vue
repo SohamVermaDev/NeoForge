@@ -20,6 +20,8 @@ const form = reactive({
     password: "",
 });
 
+const isLoading = ref(false);
+
 const showPassword = ref(false);
 
 const message = reactive({
@@ -39,6 +41,7 @@ const clearMessage = () => {
 
 const handleSubmit = async () => {
     clearMessage();
+    isLoading.value = true;
 
     try {
         if (props.mode === "login") {
@@ -59,6 +62,8 @@ const handleSubmit = async () => {
         }
     } catch (error) {
         setMessage("Something when wrong! Please try again.");
+    } finally {
+        isLoading.value = false;
     }
 };
 </script>
@@ -108,8 +113,9 @@ const handleSubmit = async () => {
                 {{ message.text }}
             </div>
 
-            <button type="submit" class="submit-btn">
-                {{ mode === "login" ? "SIGN IN" : "SIGN UP" }}
+            <button type="submit" class="submit-btn" :disable="isLoading">
+                <span v-if="isLoading" class="spinner"></span>
+                <span v-else>{{ mode === "login" ? "SIGN IN" : "SIGN UP" }}</span>
             </button>
         </form>
     </div>
@@ -267,7 +273,29 @@ const handleSubmit = async () => {
             &:active {
                 transform: translateY(0);
             }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none !important;
+            }
+
+            .spinner {
+                display: inline-block;
+                width: 1.2rem;
+                height: 1.2rem;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top-color: colors.$text-primary;
+                border-radius: 50%;
+                animation: spin 0.6s linear infinite;
+            }
         }
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 
