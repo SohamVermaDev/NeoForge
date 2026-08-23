@@ -130,7 +130,7 @@ const handleSubmit = async () => {
     max-width: 26rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 
     .form-header {
         h1 {
@@ -151,7 +151,7 @@ const handleSubmit = async () => {
     .form-body {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1.5rem;
 
         .form-group {
             label {
@@ -231,11 +231,10 @@ const handleSubmit = async () => {
             display: flex;
             align-items: center;
             gap: 0.75rem;
-            padding: 0.6rem 1rem;
+            padding: 0.5rem 1rem;
             border-radius: variables.$radius;
             font-size: 0.85rem;
             font-weight: 500;
-            margin: 0.25rem 0 0.5rem;
             border-left: 3px solid transparent;
             transition: variables.$transition-smooth;
 
@@ -290,7 +289,6 @@ const handleSubmit = async () => {
             letter-spacing: 0.08em;
             cursor: pointer;
             transition: variables.$transition-smooth;
-            margin-top: 0.25rem;
 
             &:hover {
                 background: colors.$accent-hover;

@@ -44,7 +44,7 @@ const handleToggle = () => {
 .auth-container {
     width: 100%;
     max-width: 72rem;
-    height: 32rem;
+    height: 36rem;
     position: relative;
 }
 
