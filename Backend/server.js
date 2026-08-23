@@ -9,7 +9,7 @@ const limiter = rateLimit({
     windowMs: 5 * 60 * 1000,
     limit: 50,
 
-    handler: (req, res) => {
+    handler: (_req, res) => {
         res.status(429).json({ error: 'Too many attempts!' });
     },
 });
@@ -22,7 +22,7 @@ app.use(limiter);
 
 app.use('/auth', authRoutes);
 
-app.get('/', (req, res) => {
+app.get('/', (_req, res) => {
     res.send('<h1>CAN BE /GET!</h1>');
 });
 
