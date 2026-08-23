@@ -26,16 +26,19 @@ const showPassword = ref(false);
 
 const message = reactive({
     text: "",
+    type: "",
     visible: false,
 });
 
-const setMessage = (text) => {
+const setMessage = (text, type) => {
     message.text = text;
+    message.type = type;
     message.visible = true;
 };
 
 const clearMessage = () => {
     message.text = "";
+    message.type = "";
     message.visible = false;
 };
 
@@ -46,7 +49,7 @@ const handleSubmit = async () => {
     try {
         if (props.mode === "login") {
             await authStore.login(form.email, form.password);
-            setMessage("Welcome back!");
+            setMessage("Welcome back!", "success");
 
             setTimeout(() => {
                 router.push("/dashboard");
@@ -58,10 +61,10 @@ const handleSubmit = async () => {
                 router.push("/login");
             }, 1500);
 
-            setMessage("Account created successfully!");
+            setMessage("Account created successfully!", "success");
         }
     } catch (error) {
-        setMessage("Something when wrong! Please try again.");
+        setMessage("Something when wrong! Please try again.", "error");
     } finally {
         isLoading.value = false;
     }
@@ -109,7 +112,7 @@ const handleSubmit = async () => {
                 </div>
             </div>
 
-            <div v-if="message.visible" class="message-box error">
+            <div v-if="message.visible" class="message-box" :class="message.type">
                 {{ message.text }}
             </div>
 
@@ -244,6 +247,31 @@ const handleSubmit = async () => {
                 &::before {
                     content: "⚠";
                     font-size: 1rem;
+                    flex-shrink: 0;
+                }
+            }
+
+            &.warning {
+                background: functions.alpha(colors.$status-warning, 0.08);
+                border-left-color: colors.$status-warning;
+                color: colors.$status-warning;
+
+                &::before {
+                    content: "⚡";
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                }
+            }
+
+            &.success {
+                background: functions.alpha(colors.$status-success, 0.08);
+                border-left-color: colors.$status-success;
+                color: colors.$status-success;
+
+                &::before {
+                    content: "✓";
+                    font-size: 1rem;
+                    font-weight: 700;
                     flex-shrink: 0;
                 }
             }
