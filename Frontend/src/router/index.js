@@ -26,7 +26,7 @@ const routes = [
             { path: "games", component: Games },
         ],
     },
-    { path: "/", redirect: "/admin" },
+    { path: "/" },
 ];
 
 const router = createRouter({ history: createWebHistory(), routes });
@@ -34,12 +34,25 @@ const router = createRouter({ history: createWebHistory(), routes });
 router.beforeEach((to) => {
     const authStore = useAuthStore();
 
-    if (to.path.startsWith("/admin") && !authStore.isAuthenticated && !authStore.isAdmin) {
-        return "/login";
+    if (to.path.startsWith("/admin")) {
+        if (authStore.isAuthenticated) {
+            if (authStore.isAdmin) {
+                return true;
+            } else {
+                return "/";
+            }
+        } else {
+            return "/login";
+        }
     }
 
-    if ((to.path === "/login" || to.path === "/register") && authStore.isAuthenticated && authStore.isAdmin) {
-        return "/admin";
+    if (to.path === "/login" || to.path === "/register") {
+        if (authStore.isAuthenticated) {
+            if (authStore.isAdmin) {
+                return "/admin";
+            }
+        }
+        return true;
     }
 
     return true;
