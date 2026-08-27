@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -18,11 +18,9 @@ const form = reactive({
     username: "",
     email: "",
     password: "",
+    showPassword: false,
+    isLoading: false,
 });
-
-const isLoading = ref(false);
-
-const showPassword = ref(false);
 
 const message = reactive({
     text: "",
@@ -44,7 +42,7 @@ const clearMessage = () => {
 
 const handleSubmit = async () => {
     clearMessage();
-    isLoading.value = true;
+    form.isLoading = true;
 
     try {
         if (props.mode === "login") {
@@ -66,7 +64,7 @@ const handleSubmit = async () => {
     } catch (error) {
         setMessage("Something when wrong! Please try again.", "error");
     } finally {
-        isLoading.value = false;
+        form.isLoading = false;
     }
 };
 </script>
@@ -101,13 +99,13 @@ const handleSubmit = async () => {
                     <input
                         id="password"
                         v-model="form.password"
-                        :type="showPassword ? 'text' : 'password'"
+                        :type="form.showPassword ? 'text' : 'password'"
                         required
                         placeholder="Enter your password"
                         autocomplete="current-password"
                     />
-                    <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-                        <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                    <button type="button" class="toggle-password" @click="form.showPassword = !form.showPassword">
+                        <i :class="form.showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                     </button>
                 </div>
             </div>
@@ -116,8 +114,8 @@ const handleSubmit = async () => {
                 {{ message.text }}
             </div>
 
-            <button type="submit" class="submit-btn" :disable="isLoading">
-                <span v-if="isLoading" class="spinner"></span>
+            <button type="submit" class="submit-btn" :disable="form.isLoading">
+                <span v-if="form.isLoading" class="spinner"></span>
                 <span v-else>{{ mode === "login" ? "SIGN IN" : "SIGN UP" }}</span>
             </button>
         </form>
