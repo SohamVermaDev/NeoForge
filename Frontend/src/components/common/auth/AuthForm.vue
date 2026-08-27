@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, watch } from "vue";
+import { ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -18,6 +18,8 @@ const props = defineProps({
     },
 });
 
+const formRef = ref(null);
+
 const form = reactive({
     username: "",
     email: "",
@@ -32,6 +34,10 @@ const clearForm = () => {
     form.password = "";
     form.showPassword = false;
     form.isLoading = false;
+
+    if (formRef.value) {
+        formRef.value.reset();
+    }
 };
 
 const message = reactive({
@@ -102,7 +108,7 @@ watch(
             </Transition>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="form-body">
+        <form ref="formRef" @submit.prevent="handleSubmit" class="form-body">
             <div v-if="mode === 'register'" class="form-group">
                 <label for="username">Username</label>
                 <input id="username" v-model="form.username" type="text" required placeholder="Choose a username" autocomplete="username" />
