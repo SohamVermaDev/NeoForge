@@ -47,9 +47,9 @@ const setMessage = (text, type) => {
 };
 
 const clearMessage = () => {
+    message.visible = false;
     message.text = "";
     message.type = "";
-    message.visible = false;
 };
 
 const handleSubmit = async () => {
@@ -130,9 +130,11 @@ watch(
                 </div>
             </div>
 
-            <div v-if="message.visible" class="message-box" :class="message.type">
-                {{ message.text }}
-            </div>
+            <Transition name="message">
+                <div v-if="message.visible" class="message-box" :class="message.type">
+                    {{ message.text }}
+                </div>
+            </Transition>
 
             <button type="submit" class="submit-btn" :disable="form.isLoading">
                 <span v-if="form.isLoading" class="spinner"></span>
@@ -246,6 +248,7 @@ watch(
         }
 
         .message-box {
+            overflow: hidden;
             display: flex;
             align-items: center;
             gap: 0.75rem;
@@ -356,5 +359,34 @@ watch(
 .fade-text-leave-to {
     opacity: 0;
     transform: translateY(-6px);
+}
+
+.message-enter-active,
+.message-leave-active {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-enter-from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    max-height: 0;
+    padding: 0 1rem;
+    margin: 0;
+}
+
+.message-enter-to,
+.message-leave-from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    max-height: 4rem;
+    padding: 0.5rem 1rem;
+}
+
+.message-leave-to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    max-height: 0;
+    padding: 0 1rem;
+    margin: 0;
 }
 </style>
