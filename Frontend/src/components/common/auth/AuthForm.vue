@@ -1,5 +1,5 @@
 <script setup>
-import { reactive } from "vue";
+import { reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -12,6 +12,10 @@ const props = defineProps({
         required: true,
         validator: (val) => ["login", "register"].includes(val),
     },
+    reset: {
+        type: String,
+        required: true,
+    },
 });
 
 const form = reactive({
@@ -21,6 +25,14 @@ const form = reactive({
     showPassword: false,
     isLoading: false,
 });
+
+const clearForm = () => {
+    form.username = "";
+    form.email = "";
+    form.password = "";
+    form.showPassword = false;
+    form.isLoading = false;
+};
 
 const message = reactive({
     text: "",
@@ -67,6 +79,14 @@ const handleSubmit = async () => {
         form.isLoading = false;
     }
 };
+
+watch(
+    () => props.reset,
+    () => {
+        clearForm();
+        clearMessage();
+    }
+);
 </script>
 
 <template>
