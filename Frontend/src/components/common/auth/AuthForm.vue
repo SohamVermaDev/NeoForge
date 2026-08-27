@@ -214,6 +214,27 @@ watch(
                 &::placeholder {
                     color: functions.alpha(colors.$text-secondary, 0.4);
                 }
+
+                &:-webkit-autofill {
+                    -webkit-box-shadow: inset 0 0 0 1000px colors.$bg-body !important;
+                    -webkit-text-fill-color: colors.$text-primary !important;
+                    caret-color: colors.$text-primary !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                }
+
+                &:-webkit-autofill:valid {
+                    border-color: colors.$status-success !important;
+                    -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-success, 0.2) !important;
+                }
+
+                &:-webkit-autofill:invalid {
+                    border-color: colors.$status-error !important;
+                    -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-error, 0.2) !important;
+                }
             }
         }
 
