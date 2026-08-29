@@ -142,7 +142,7 @@ watch(
                 </div>
             </Transition>
 
-            <button type="submit" class="submit-btn" :disable="form.isLoading">
+            <button type="submit" class="submit-btn" :disabled="form.isLoading">
                 <span v-if="form.isLoading" class="spinner"></span>
                 <span v-else>{{ mode === "login" ? "SIGN IN" : "SIGN UP" }}</span>
             </button>
