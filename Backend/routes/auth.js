@@ -15,12 +15,6 @@ router.post('/register', async (req, res) => {
             .json({ error: 'Username, email password are required!' });
     }
 
-    if (password.length < 6) {
-        return res
-            .status(400)
-            .json({ error: 'Password must be at least 6 characters long!' });
-    }
-
     const [rows] = await db.query('SELECT * FROM users WHERE username = ?', [
         username,
     ]);

@@ -176,6 +176,7 @@ watch(
                         v-model="form.password"
                         :type="form.showPassword ? 'text' : 'password'"
                         required
+                        minlength="6"
                         placeholder="Enter your password"
                         autocomplete="current-password"
                     />
