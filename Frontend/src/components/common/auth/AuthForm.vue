@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, watch } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -16,6 +16,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    isActive: {
+        type: Boolean,
+        required: true,
+    },
 });
 
 const formRef = ref(null);
@@ -26,6 +30,35 @@ const form = reactive({
     password: "",
     showPassword: false,
     isLoading: false,
+});
+
+const usernameFieldRef = ref(null);
+const emailFieldRef = ref(null);
+
+const focusFirstField = () => {
+    const target = props.mode === "login" ? emailFieldRef.value : usernameFieldRef.value;
+
+    if (target) {
+        target.focus();
+    }
+};
+
+watch(
+    () => props.isActive,
+    (newVal) => {
+        if (newVal) {
+            setTimeout(() => {
+                focusFirstField();
+            }, 650);
+        }
+    },
+    { immediate: true }
+);
+
+onMounted(() => {
+    if (props.isActive) {
+        setTimeout(focusFirstField, 650);
+    }
 });
 
 const clearForm = () => {
@@ -111,12 +144,28 @@ watch(
         <form ref="formRef" @submit.prevent="handleSubmit" class="form-body">
             <div v-if="mode === 'register'" class="form-group">
                 <label for="username">Username</label>
-                <input id="username" v-model="form.username" type="text" required placeholder="Choose a username" autocomplete="username" />
+                <input
+                    ref="usernameFieldRef"
+                    id="username"
+                    v-model="form.username"
+                    type="text"
+                    required
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                />
             </div>
 
             <div class="form-group">
                 <label for="email">Email</label>
-                <input id="email" v-model="form.email" type="email" required placeholder="Enter your email" autocomplete="email" />
+                <input
+                    ref="emailFieldRef"
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                />
             </div>
 
             <div class="form-group password-group">
