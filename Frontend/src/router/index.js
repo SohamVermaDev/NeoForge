@@ -47,14 +47,14 @@ router.beforeEach((to) => {
     }
 
     if (to.path === "/login" || to.path === "/register") {
-        if (authStore.isAuthenticated) {
-            if (authStore.isAdmin) {
-                return "/admin";
-            }
+        if (!authStore.isAuthenticated) {
+            return true;
         }
-        return true;
+
+        return authStore.isAdmin ? "/admin" : "/";
     }
 
     return true;
 });
+
 export default router;
