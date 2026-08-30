@@ -143,7 +143,7 @@ watch(
 
         <form ref="formRef" @submit.prevent="handleSubmit" class="form-body">
             <div v-if="mode === 'register'" class="form-group">
-                <label for="username">Username</label>
+                <label for="username">Username <span class="required">*</span></label>
                 <input
                     ref="usernameFieldRef"
                     id="username"
@@ -156,7 +156,7 @@ watch(
             </div>
 
             <div class="form-group">
-                <label for="email">Email</label>
+                <label for="email">Email <span class="required">*</span></label>
                 <input
                     ref="emailFieldRef"
                     id="email"
@@ -169,7 +169,7 @@ watch(
             </div>
 
             <div class="form-group password-group">
-                <label for="password">Password</label>
+                <label for="password">Password <span class="required">*</span></label>
                 <div class="password-input-wrapper">
                     <input
                         id="password"
@@ -235,6 +235,12 @@ watch(
                 font-size: 0.9rem;
                 color: colors.$text-primary;
                 margin-bottom: 0.3rem;
+
+                .required {
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    color: colors.$status-error;
+                }
             }
 
             input {
