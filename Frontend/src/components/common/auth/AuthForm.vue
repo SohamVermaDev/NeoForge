@@ -1,5 +1,10 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { onMounted, ref, reactive, watch } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
 
 const props = defineProps({
     mode: {
@@ -7,19 +12,120 @@ const props = defineProps({
         required: true,
         validator: (val) => ["login", "register"].includes(val),
     },
+    reset: {
+        type: String,
+        required: true,
+    },
+    isActive: {
+        type: Boolean,
+        required: true,
+    },
 });
+
+const formRef = ref(null);
 
 const form = reactive({
     username: "",
     email: "",
     password: "",
+    showPassword: false,
+    isLoading: false,
 });
 
-const showPassword = ref(false);
+const usernameFieldRef = ref(null);
+const emailFieldRef = ref(null);
 
-const handleSubmit = () => {
-    // TODO: Implement auth logic
+const focusFirstField = () => {
+    const target = props.mode === "login" ? emailFieldRef.value : usernameFieldRef.value;
+
+    if (target) {
+        target.focus();
+    }
 };
+
+watch(
+    () => props.isActive,
+    (newVal) => {
+        if (newVal) {
+            setTimeout(() => {
+                focusFirstField();
+            }, 650);
+        }
+    },
+    { immediate: true }
+);
+
+onMounted(() => {
+    if (props.isActive) {
+        setTimeout(focusFirstField, 650);
+    }
+});
+
+const clearForm = () => {
+    form.username = "";
+    form.email = "";
+    form.password = "";
+    form.showPassword = false;
+    form.isLoading = false;
+
+    if (formRef.value) {
+        formRef.value.reset();
+    }
+};
+
+const message = reactive({
+    text: "",
+    type: "",
+    visible: false,
+});
+
+const setMessage = (text, type) => {
+    message.text = text;
+    message.type = type;
+    message.visible = true;
+};
+
+const clearMessage = () => {
+    message.visible = false;
+    message.text = "";
+    message.type = "";
+};
+
+const handleSubmit = async () => {
+    clearMessage();
+    form.isLoading = true;
+
+    try {
+        if (props.mode === "login") {
+            await authStore.login(form.email, form.password);
+            setMessage("Welcome back!", "success");
+
+            setTimeout(() => {
+                router.push("/admin");
+            }, 1500);
+        } else {
+            await authStore.register(form.username, form.email, form.password);
+
+            setTimeout(() => {
+                router.push("/login");
+            }, 1500);
+
+            setMessage("Account created successfully!", "success");
+        }
+    } catch (error) {
+        setMessage("Something when wrong! Please try again.", "error");
+    } finally {
+        form.isLoading = false;
+    }
+};
+
+watch(
+    () => props.reset,
+    () => {
+        clearForm();
+        clearMessage();
+    }
+);
 </script>
 
 <template>
@@ -35,36 +141,60 @@ const handleSubmit = () => {
             </Transition>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="form-body">
+        <form ref="formRef" @submit.prevent="handleSubmit" class="form-body">
             <div v-if="mode === 'register'" class="form-group">
-                <label for="username">Username</label>
-                <input id="username" v-model="form.username" type="text" required placeholder="Choose a username" autocomplete="username" />
+                <label for="username">Username <span class="required">*</span></label>
+                <input
+                    ref="usernameFieldRef"
+                    id="username"
+                    v-model="form.username"
+                    type="text"
+                    required
+                    placeholder="Choose a username"
+                    autocomplete="username"
+                />
             </div>
 
             <div class="form-group">
-                <label for="email">Email</label>
-                <input id="email" v-model="form.email" type="email" required placeholder="Enter your email" autocomplete="email" />
+                <label for="email">Email <span class="required">*</span></label>
+                <input
+                    ref="emailFieldRef"
+                    id="email"
+                    v-model="form.email"
+                    type="email"
+                    required
+                    placeholder="Enter your email"
+                    autocomplete="email"
+                />
             </div>
 
             <div class="form-group password-group">
-                <label for="password">Password</label>
+                <label for="password">Password <span class="required">*</span></label>
                 <div class="password-input-wrapper">
                     <input
                         id="password"
                         v-model="form.password"
-                        :type="showPassword ? 'text' : 'password'"
+                        :type="form.showPassword ? 'text' : 'password'"
                         required
+                        minlength="6"
                         placeholder="Enter your password"
                         autocomplete="current-password"
                     />
-                    <button type="button" class="toggle-password" @click="showPassword = !showPassword">
-                        <i :class="showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
+                    <button type="button" class="toggle-password" @click="form.showPassword = !form.showPassword">
+                        <i :class="form.showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
                     </button>
                 </div>
             </div>
 
-            <button type="submit" class="submit-btn">
-                {{ mode === "login" ? "SIGN IN" : "SIGN UP" }}
+            <Transition name="message">
+                <div v-if="message.visible" class="message-box" :class="message.type">
+                    {{ message.text }}
+                </div>
+            </Transition>
+
+            <button type="submit" class="submit-btn" :disabled="form.isLoading">
+                <span v-if="form.isLoading" class="spinner"></span>
+                <span v-else>{{ mode === "login" ? "SIGN IN" : "SIGN UP" }}</span>
             </button>
         </form>
     </div>
@@ -76,7 +206,7 @@ const handleSubmit = () => {
     max-width: 26rem;
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 
     .form-header {
         h1 {
@@ -97,7 +227,7 @@ const handleSubmit = () => {
     .form-body {
         display: flex;
         flex-direction: column;
-        gap: 1.25rem;
+        gap: 1.5rem;
 
         .form-group {
             label {
@@ -106,6 +236,12 @@ const handleSubmit = () => {
                 font-size: 0.9rem;
                 color: colors.$text-primary;
                 margin-bottom: 0.3rem;
+
+                .required {
+                    font-size: 0.9rem;
+                    font-weight: 400;
+                    color: colors.$status-error;
+                }
             }
 
             input {
@@ -133,6 +269,27 @@ const handleSubmit = () => {
 
                 &::placeholder {
                     color: functions.alpha(colors.$text-secondary, 0.4);
+                }
+
+                &:-webkit-autofill {
+                    -webkit-box-shadow: inset 0 0 0 1000px colors.$bg-body !important;
+                    -webkit-text-fill-color: colors.$text-primary !important;
+                    caret-color: colors.$text-primary !important;
+                    transition: background-color 5000s ease-in-out 0s;
+                }
+
+                &:-webkit-autofill:valid {
+                    border-color: colors.$status-success !important;
+                    -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-success, 0.2) !important;
+                }
+
+                &:-webkit-autofill:invalid {
+                    border-color: colors.$status-error !important;
+                    -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-error, 0.2) !important;
                 }
             }
         }
@@ -173,6 +330,56 @@ const handleSubmit = () => {
             }
         }
 
+        .message-box {
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem 1rem;
+            border-radius: variables.$radius;
+            font-size: 0.85rem;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+            transition: variables.$transition-smooth;
+
+            &.error {
+                background: functions.alpha(colors.$status-error, 0.08);
+                border-left-color: colors.$status-error;
+                color: colors.$status-error;
+
+                &::before {
+                    content: "⚠";
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                }
+            }
+
+            &.warning {
+                background: functions.alpha(colors.$status-warning, 0.08);
+                border-left-color: colors.$status-warning;
+                color: colors.$status-warning;
+
+                &::before {
+                    content: "⚡";
+                    font-size: 1rem;
+                    flex-shrink: 0;
+                }
+            }
+
+            &.success {
+                background: functions.alpha(colors.$status-success, 0.08);
+                border-left-color: colors.$status-success;
+                color: colors.$status-success;
+
+                &::before {
+                    content: "✓";
+                    font-size: 1rem;
+                    font-weight: 700;
+                    flex-shrink: 0;
+                }
+            }
+        }
+
         .submit-btn {
             @include mixins.focus-ring(colors.$bg-card, colors.$accent);
             width: 100%;
@@ -186,7 +393,6 @@ const handleSubmit = () => {
             letter-spacing: 0.08em;
             cursor: pointer;
             transition: variables.$transition-smooth;
-            margin-top: 0.25rem;
 
             &:hover {
                 background: colors.$accent-hover;
@@ -197,7 +403,29 @@ const handleSubmit = () => {
             &:active {
                 transform: translateY(0);
             }
+
+            &:disabled {
+                opacity: 0.6;
+                cursor: not-allowed;
+                transform: none !important;
+            }
+
+            .spinner {
+                display: inline-block;
+                width: 1.2rem;
+                height: 1.2rem;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top-color: colors.$text-primary;
+                border-radius: 50%;
+                animation: spin 0.6s linear infinite;
+            }
         }
+    }
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
     }
 }
 
@@ -214,5 +442,34 @@ const handleSubmit = () => {
 .fade-text-leave-to {
     opacity: 0;
     transform: translateY(-6px);
+}
+
+.message-enter-active,
+.message-leave-active {
+    transition: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.message-enter-from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    max-height: 0;
+    padding: 0 1rem;
+    margin: 0;
+}
+
+.message-enter-to,
+.message-leave-from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    max-height: 4rem;
+    padding: 0.5rem 1rem;
+}
+
+.message-leave-to {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.96);
+    max-height: 0;
+    padding: 0 1rem;
+    margin: 0;
 }
 </style>

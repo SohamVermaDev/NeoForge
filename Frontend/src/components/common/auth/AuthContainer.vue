@@ -24,7 +24,7 @@ const handleToggle = () => {
         <div class="auth-card" :class="{ 'is-register': mode === 'register' }">
             <div class="auth-slider">
                 <div class="panel form-panel">
-                    <AuthForm :mode="'login'" />
+                    <AuthForm :mode="'login'" :reset="mode" :is-active="mode === 'login'" />
                 </div>
 
                 <div class="panel greeting-panel">
@@ -33,7 +33,7 @@ const handleToggle = () => {
                 </div>
 
                 <div class="panel form-panel">
-                    <AuthForm :mode="'register'" />
+                    <AuthForm :mode="'register'" :reset="mode" :is-active="mode === 'register'" />
                 </div>
             </div>
         </div>
@@ -44,7 +44,7 @@ const handleToggle = () => {
 .auth-container {
     width: 100%;
     max-width: 72rem;
-    height: 32rem;
+    height: 36rem;
     position: relative;
 }
 

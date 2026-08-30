@@ -4,6 +4,8 @@ import Dashboard from "@/views/admin/Dashboard.vue";
 import Games from "@/views/admin/GamesManage.vue";
 import AuthPage from "@/views/auth/AuthPage.vue";
 
+import { useAuthStore } from "@/stores/auth";
+
 const routes = [
     {
         path: "/login",
@@ -24,8 +26,35 @@ const routes = [
             { path: "games", component: Games },
         ],
     },
-    { path: "/", redirect: "/admin" },
+    { path: "/" },
 ];
 
 const router = createRouter({ history: createWebHistory(), routes });
+
+router.beforeEach((to) => {
+    const authStore = useAuthStore();
+
+    if (to.path.startsWith("/admin")) {
+        if (authStore.isAuthenticated) {
+            if (authStore.isAdmin) {
+                return true;
+            } else {
+                return "/";
+            }
+        } else {
+            return "/login";
+        }
+    }
+
+    if (to.path === "/login" || to.path === "/register") {
+        if (!authStore.isAuthenticated) {
+            return true;
+        }
+
+        return authStore.isAdmin ? "/admin" : "/";
+    }
+
+    return true;
+});
+
 export default router;
