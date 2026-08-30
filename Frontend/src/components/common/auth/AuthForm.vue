@@ -101,7 +101,7 @@ const handleSubmit = async () => {
             setMessage("Welcome back!", "success");
 
             setTimeout(() => {
-                router.push("/dashboard");
+                router.push("/admin");
             }, 1500);
         } else {
             await authStore.register(form.username, form.email, form.password);
