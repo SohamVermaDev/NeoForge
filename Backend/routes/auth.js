@@ -9,27 +9,52 @@ const router = express.Router();
 router.post("/register", async (req, res) => {
     const { username, email, password } = req.body;
 
-    const [rows] = await db.query("SELECT * FROM users WHERE username = ?", [
-        username,
-    ]);
-    if (rows.length === 0) {
-        try {
-            const hashedPassword = await bcrypt.hash(password, 10);
-            const [result] = await db.query(
-                "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
-                [username, hashedPassword, email, "user"]
-            );
-            res.json({
-                message: "User registered successfully!",
-                id: result.insertId,
-                user: { username, email },
-            });
-        } catch (err) {
-            console.error(err);
-            res.status(500).json({ error: "Failed to register user!" });
+    try {
+        const [existingUsers] = await db.query(
+            "SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1",
+            [username, email]
+        );
+
+        if (existingUsers.length > 0) {
+            const existingUser = existingUsers[0];
+            const error =
+                existingUser.username === username
+                    ? "Username already taken!"
+                    : "Email already registered!";
+            return res.status(409).json({ error });
         }
-    } else {
-        res.status(409).json({ error: "Username already taken!" });
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const [result] = await db.query(
+            "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
+            [username, hashedPassword, email, "user"]
+        );
+        res.json({
+            message: "User registered successfully!",
+            id: result.insertId,
+            user: { username, email },
+        });
+    } catch (err) {
+        if (err.code === "ER_DUP_ENTRY") {
+            if (err.message.includes("username")) {
+                return res.status(409).json({
+                    error: "Username already taken!",
+                });
+            }
+
+            if (err.message.includes("email")) {
+                return res.status(409).json({
+                    error: "Email already registered!",
+                });
+            }
+
+            return res.status(409).json({
+                error: "Username or email is already registered!",
+            });
+        }
+
+        console.error(err);
+        res.status(500).json({ error: "Failed to register user!" });
     }
 });
 
