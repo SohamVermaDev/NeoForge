@@ -16,12 +16,9 @@ router.post("/register", async (req, res) => {
         );
 
         if (existingUsers.length > 0) {
-            const existingUser = existingUsers[0];
-            const error =
-                existingUser.username === username
-                    ? "Username already taken!"
-                    : "Email already registered!";
-            return res.status(409).json({ error });
+            return res
+                .status(409)
+                .json({ error: "Credentials already in use." });
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -35,24 +32,6 @@ router.post("/register", async (req, res) => {
             user: { username, email },
         });
     } catch (err) {
-        if (err.code === "ER_DUP_ENTRY") {
-            if (err.message.includes("username")) {
-                return res.status(409).json({
-                    error: "Username already taken!",
-                });
-            }
-
-            if (err.message.includes("email")) {
-                return res.status(409).json({
-                    error: "Email already registered!",
-                });
-            }
-
-            return res.status(409).json({
-                error: "Username or email is already registered!",
-            });
-        }
-
         console.error(err);
         res.status(500).json({ error: "Failed to register user!" });
     }
