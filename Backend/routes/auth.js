@@ -36,6 +36,12 @@ router.post(
                 user: { username, email },
             });
         } catch (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+                return res.status(409).json({
+                    error: "Credentials already in use.",
+                });
+            }
+
             console.error(err);
             res.status(500).json({ error: "Failed to register user!" });
         }
@@ -55,7 +61,9 @@ router.post("/login", validateAuthInput(), async (req, res) => {
         const user = rows[0];
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res.status(401).json({ error: "Invalid password!" });
+            return res
+                .status(401)
+                .json({ error: "Invalid email or password!" });
         }
 
         const token = jwt.sign(
