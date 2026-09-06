@@ -4,40 +4,45 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
 const db = require("../db");
+const validateAuthInput = require("../middleware/authValidation");
 const router = express.Router();
 
-router.post("/register", async (req, res) => {
-    const { username, email, password } = req.body;
+router.post(
+    "/register",
+    validateAuthInput({ requireUsername: true }),
+    async (req, res) => {
+        const { username, email, password } = req.body;
 
-    try {
-        const [existingUsers] = await db.query(
-            "SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1",
-            [username, email]
-        );
+        try {
+            const [existingUsers] = await db.query(
+                "SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1",
+                [username, email]
+            );
 
-        if (existingUsers.length > 0) {
-            return res
-                .status(409)
-                .json({ error: "Credentials already in use." });
+            if (existingUsers.length > 0) {
+                return res
+                    .status(409)
+                    .json({ error: "Credentials already in use." });
+            }
+
+            const hashedPassword = await bcrypt.hash(password, 10);
+            const [result] = await db.query(
+                "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
+                [username, hashedPassword, email, "user"]
+            );
+            res.json({
+                message: "User registered successfully!",
+                id: result.insertId,
+                user: { username, email },
+            });
+        } catch (err) {
+            console.error(err);
+            res.status(500).json({ error: "Failed to register user!" });
         }
-
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const [result] = await db.query(
-            "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
-            [username, hashedPassword, email, "user"]
-        );
-        res.json({
-            message: "User registered successfully!",
-            id: result.insertId,
-            user: { username, email },
-        });
-    } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: "Failed to register user!" });
     }
-});
+);
 
-router.post("/login", async (req, res) => {
+router.post("/login", validateAuthInput(), async (req, res) => {
     const { email, password } = req.body;
     try {
         const [rows] = await db.query(
