@@ -30,7 +30,7 @@ router.post(
                 "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
                 [username, hashedPassword, email, "user"]
             );
-            res.json({
+            res.status(201).json({
                 message: "User registered successfully!",
                 id: result.insertId,
                 user: { username, email },
@@ -77,7 +77,7 @@ router.post("/login", validateAuthInput(), async (req, res) => {
             { expiresIn: "7d" }
         );
 
-        res.json({
+        res.status(200).json({
             message: "Successful login!",
             token: token,
             userId: user.id,
