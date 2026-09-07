@@ -1,9 +1,12 @@
 require("dotenv").config();
+
 const express = require("express");
-const app = express();
-const port = process.env.PORT;
 const cors = require("cors");
 const rateLimit = require("express-rate-limit");
+const authRoutes = require("./routes/auth");
+
+const app = express();
+const port = process.env.PORT;
 
 const limiter = rateLimit({
     windowMs: 5 * 60 * 1000,
@@ -13,8 +16,6 @@ const limiter = rateLimit({
         res.status(429).json({ error: "Too many attempts!" });
     },
 });
-
-const authRoutes = require("./routes/auth");
 
 app.use(express.json());
 app.use(cors());
