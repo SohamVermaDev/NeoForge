@@ -52,7 +52,7 @@ router.post("/login", validateAuthInput(), async (req, res) => {
     const { email, password } = req.body;
     try {
         const [rows] = await db.query(
-            "SELECT id, username, password, email, role FROM users WHERE email = ?",
+            "SELECT id, username, password, email, role FROM users WHERE email = ? LIMIT 1",
             [email]
         );
         if (rows.length === 0) {
