@@ -10,6 +10,11 @@ const pool = mysql.createPool({
     queueLimit: 0,
 });
 
+async function testConnection() {
+    (await pool.promise().getConnection()).release();
+}
+
 module.exports = {
     db: pool.promise(),
+    testConnection,
 };
