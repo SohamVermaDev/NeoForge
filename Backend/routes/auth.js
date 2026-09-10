@@ -21,7 +21,9 @@ router.post(
             if (existingUsers.length > 0) {
                 return res
                     .status(409)
-                    .json({ error: "Credentials already in use." });
+                    .json({
+                        error: "Unable to create an account with these details!",
+                    });
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,7 +39,7 @@ router.post(
         } catch (err) {
             if (err.code === "ER_DUP_ENTRY") {
                 return res.status(409).json({
-                    error: "Credentials already in use.",
+                    error: "Unable to create an account with these details!",
                 });
             }
 
@@ -55,7 +57,9 @@ router.post("/login", validateAuthInput(), async (req, res) => {
             [email]
         );
         if (rows.length === 0) {
-            return res.status(404).json({ error: "User not found!" });
+            return res
+                .status(401)
+                .json({ error: "Invalid email or password!" });
         }
         const user = rows[0];
         const passwordMatch = await bcrypt.compare(password, user.password);
