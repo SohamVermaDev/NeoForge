@@ -55,7 +55,7 @@ app.use(cors({
 
 app.use(limiter);
 
-app.use("/auth", authRoutes);
+app.use("/auth", limiter, authRoutes);
 
 app.get("/", (_req, res) => {
     res.send("<h1>CAN BE /GET!</h1>");
