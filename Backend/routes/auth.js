@@ -14,7 +14,7 @@ router.post(
 
         try {
             const [existingUsers] = await db.query(
-                "SELECT username, email FROM users WHERE username = ? OR email = ? LIMIT 1",
+                "SELECT 1 FROM users WHERE username = ? OR email = ? LIMIT 1",
                 [username, email]
             );
 
