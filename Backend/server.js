@@ -61,8 +61,6 @@ app.use(
     })
 );
 
-app.use(limiter);
-
 app.use("/auth", limiter, authRoutes);
 
 app.get("/", (_req, res) => {
