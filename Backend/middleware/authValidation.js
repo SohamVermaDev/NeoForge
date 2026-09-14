@@ -11,8 +11,20 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
             return res.status(400).json({ error: "Username is required." });
         }
 
+        if (requireUsername && username.length > 100) {
+            return res
+                .status(400)
+                .json({ error: "Username must not exceed 100 characters." });
+        }
+
         if (typeof email !== "string" || !email.trim()) {
             return res.status(400).json({ error: "Email is required." });
+        }
+
+        if (email.length > 254) {
+            return res
+                .status(400)
+                .json({ error: "Email must not exceed 254 characters." });
         }
 
         if (!emailPattern.test(email.trim())) {

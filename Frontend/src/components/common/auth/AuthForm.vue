@@ -150,6 +150,7 @@ watch(
                     v-model="form.username"
                     type="text"
                     required
+                    maxlength="100"
                     placeholder="Choose a username"
                     autocomplete="username"
                 />
@@ -163,6 +164,7 @@ watch(
                     v-model="form.email"
                     type="email"
                     required
+                    maxlength="254"
                     placeholder="Enter your email"
                     autocomplete="email"
                 />
