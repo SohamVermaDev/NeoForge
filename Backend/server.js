@@ -34,12 +34,14 @@ if (process.env.JWT_SECRET.length < 16) {
 
 const express = require("express");
 const cors = require("cors");
+const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth");
 
 const { testConnection } = require("./db");
 
 const app = express();
+app.use(helmet());
 const port = process.env.PORT;
 
 const limiter = rateLimit({
