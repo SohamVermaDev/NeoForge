@@ -16,9 +16,13 @@ if (missingEnv.length > 0) {
     process.exit(1);
 }
 
-if (!process.env.PORT.trim() || !Number.isInteger(Number(process.env.PORT))) {
+if (
+    !process.env.PORT?.trim() ||
+    !Number.isInteger(Number(process.env.PORT)) ||
+    Number(process.env.PORT) < 0
+) {
     console.error(
-        `PORT must be a valid integer. Current value: ${process.env.PORT}`
+        `PORT must be a valid non-negative integer. Current value: ${process.env.PORT}`
     );
     process.exit(1);
 }
