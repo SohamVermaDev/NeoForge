@@ -19,11 +19,9 @@ router.post(
             );
 
             if (existingUsers.length > 0) {
-                return res
-                    .status(409)
-                    .json({
-                        error: "Unable to create an account with these details!",
-                    });
+                return res.status(409).json({
+                    error: "Unable to create an account with these details!",
+                });
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
