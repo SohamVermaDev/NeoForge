@@ -49,7 +49,7 @@ const limiter = rateLimit({
     limit: 50,
 
     handler: (_req, res) => {
-        res.status(429).json({ error: "Too many attempts!" });
+        res.status(429).json({ code: "too_many_requests" });
     },
 });
 

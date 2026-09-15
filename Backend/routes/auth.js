@@ -19,30 +19,32 @@ router.post(
             );
 
             if (existingUsers.length > 0) {
-                return res.status(409).json({
-                    error: "Unable to create an account with these details!",
-                });
+                return res
+                    .status(409)
+                    .json({ code: "unable_to_create_account" });
             }
 
             const hashedPassword = await bcrypt.hash(password, 10);
+
             const [result] = await db.query(
                 "INSERT INTO users (username, password, email, role) VALUES (?, ?, ?, ?)",
                 [username, hashedPassword, email, "user"]
             );
+
             res.status(201).json({
-                message: "User registered successfully!",
+                code: "account_created",
                 id: result.insertId,
                 user: { username, email },
             });
         } catch (err) {
             if (err.code === "ER_DUP_ENTRY") {
-                return res.status(409).json({
-                    error: "Unable to create an account with these details!",
-                });
+                return res
+                    .status(409)
+                    .json({ code: "unable_to_create_account" });
             }
 
             console.error(err);
-            res.status(500).json({ error: "Failed to register user!" });
+            res.status(500).json({ code: "failed_to_register_user" });
         }
     }
 );
@@ -55,16 +57,12 @@ router.post("/login", validateAuthInput(), async (req, res) => {
             [email]
         );
         if (rows.length === 0) {
-            return res
-                .status(401)
-                .json({ error: "Invalid email or password!" });
+            return res.status(401).json({ code: "invalid_credentials" });
         }
         const user = rows[0];
         const passwordMatch = await bcrypt.compare(password, user.password);
         if (!passwordMatch) {
-            return res
-                .status(401)
-                .json({ error: "Invalid email or password!" });
+            return res.status(401).json({ code: "invalid_credentials" }); 
         }
 
         const token = jwt.sign(
@@ -79,7 +77,7 @@ router.post("/login", validateAuthInput(), async (req, res) => {
         );
 
         res.status(200).json({
-            message: "Successful login!",
+            code: "login_successful",
             token: token,
             userId: user.id,
             username: user.username,
@@ -88,7 +86,7 @@ router.post("/login", validateAuthInput(), async (req, res) => {
         });
     } catch (err) {
         console.error(err);
-        res.status(500).json({ error: "Login failed!" });
+        res.status(500).json({ code: "failed_to_login" });
     }
 });
 
