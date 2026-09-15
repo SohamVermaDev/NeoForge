@@ -8,27 +8,27 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
             requireUsername &&
             (typeof username !== "string" || !username.trim())
         ) {
-            return res.status(400).json({ code: "username_required" });
+            return res.status(422).json({ code: "username_required" });
         }
 
         if (requireUsername && username.length > 100) {
-            return res.status(400).json({ code: "username_too_long" });
+            return res.status(422).json({ code: "username_too_long" });
         }
 
         if (typeof email !== "string" || !email.trim()) {
-            return res.status(400).json({ code: "email_required" });
+            return res.status(422).json({ code: "email_required" });
         }
 
         if (email.length > 254) {
-            return res.status(400).json({ code: "email_too_long" });
+            return res.status(422).json({ code: "email_too_long" });
         }
 
         if (!emailPattern.test(email.trim())) {
-            return res.status(400).json({ code: "invalid_email" });
+            return res.status(422).json({ code: "invalid_email" });
         }
 
         if (typeof password !== "string" || password.length < 6) {
-            return res.status(400).json({
+            return res.status(422).json({
                 code: "password_too_short",
             });
         }
