@@ -2,6 +2,8 @@ const express = require("express");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const JWT_SECRET = process.env.JWT_SECRET;
+const DUMMY_HASH =
+    "$2b$10$CwTycUXWue0Thq9StjUM0uJ8r6Fh5Q1Z5e1Z5e1Z5e1Z5e1Z5e1Z5e";
 const { db } = require("../db");
 const validateAuthInput = require("../middleware/authValidation");
 const router = express.Router();
@@ -56,13 +58,14 @@ router.post("/login", validateAuthInput(), async (req, res) => {
             "SELECT id, username, password, email, role FROM users WHERE email = ? LIMIT 1",
             [email]
         );
-        if (rows.length === 0) {
-            return res.status(401).json({ code: "invalid_credentials" });
-        }
         const user = rows[0];
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ code: "invalid_credentials" }); 
+        const passwordMatch = await bcrypt.compare(
+            password,
+            user ? user.password : DUMMY_HASH
+        );
+
+        if (!user || !passwordMatch) {
+            return res.status(401).json({ code: "invalid_credentials" });
         }
 
         const token = jwt.sign(
