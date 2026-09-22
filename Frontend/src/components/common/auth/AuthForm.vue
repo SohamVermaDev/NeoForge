@@ -2,6 +2,7 @@
 import { onMounted, ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import getAuthMessage from "@/constants/authMessages";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -113,7 +114,9 @@ const handleSubmit = async () => {
             setMessage("Account created successfully!", "success");
         }
     } catch (error) {
-        setMessage("Something when wrong! Please try again.", "error");
+        const code = error.message;
+        const msg = getAuthMessage(code);
+        setMessage(msg.text, msg.type);
     } finally {
         form.isLoading = false;
     }

@@ -9,7 +9,7 @@ export const loginRequest = async (email, password) => {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Login failed (${response.status})`);
+        throw new Error(errorData.code || `Login failed (${response.status})`);
     }
 
     return await response.json();
@@ -24,7 +24,7 @@ export const registerRequest = async (username, email, password) => {
 
     if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || `Registration failed (${response.status})`);
+        throw new Error(errorData.code || `Registration failed (${response.status})`);
     }
 
     return await response.json();
