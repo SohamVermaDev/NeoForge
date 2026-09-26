@@ -2,6 +2,7 @@
 import { onMounted, ref, reactive, watch } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
+import getAuthMessage from "@/constants/authMessages";
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -31,6 +32,18 @@ const form = reactive({
     showPassword: false,
     isLoading: false,
 });
+
+const fieldErrors = reactive({
+    username: false,
+    email: false,
+    password: false,
+});
+
+const clearFieldErrors = () => {
+    fieldErrors.username = false;
+    fieldErrors.email = false;
+    fieldErrors.password = false;
+};
 
 const usernameFieldRef = ref(null);
 const emailFieldRef = ref(null);
@@ -113,7 +126,13 @@ const handleSubmit = async () => {
             setMessage("Account created successfully!", "success");
         }
     } catch (error) {
-        setMessage("Something when wrong! Please try again.", "error");
+        const code = error.message;
+        const msg = getAuthMessage(code);
+        setMessage(msg.text, msg.type);
+
+        msg.affected.forEach((field) => {
+            fieldErrors[field] = true;
+        });
     } finally {
         form.isLoading = false;
     }
@@ -124,6 +143,7 @@ watch(
     () => {
         clearForm();
         clearMessage();
+        clearFieldErrors();
     }
 );
 </script>
@@ -150,8 +170,11 @@ watch(
                     v-model="form.username"
                     type="text"
                     required
+                    maxlength="100"
                     placeholder="Choose a username"
                     autocomplete="username"
+                    :class="{ 'backend-invalid': fieldErrors.username }"
+                    @input="fieldErrors.username = false"
                 />
             </div>
 
@@ -163,8 +186,11 @@ watch(
                     v-model="form.email"
                     type="email"
                     required
+                    maxlength="254"
                     placeholder="Enter your email"
                     autocomplete="email"
+                    :class="{ 'backend-invalid': fieldErrors.email }"
+                    @input="fieldErrors.email = false"
                 />
             </div>
 
@@ -179,6 +205,8 @@ watch(
                         minlength="6"
                         placeholder="Enter your password"
                         autocomplete="current-password"
+                        :class="{ 'backend-invalid': fieldErrors.password }"
+                        @input="fieldErrors.password = false"
                     />
                     <button type="button" class="toggle-password" @click="form.showPassword = !form.showPassword">
                         <i :class="form.showPassword ? 'fa-solid fa-eye-slash' : 'fa-solid fa-eye'"></i>
@@ -288,6 +316,19 @@ watch(
                 &:-webkit-autofill:invalid {
                     border-color: colors.$status-error !important;
                     -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-error, 0.2) !important;
+                }
+
+                &.backend-invalid,
+                &.backend-invalid:-webkit-autofill,
+                &.backend-invalid:-webkit-autofill:valid,
+                &.backend-invalid:-webkit-autofill:invalid {
+                    border-color: colors.$status-error !important;
+                    -webkit-box-shadow:
+                        inset 0 0 0 1000px colors.$bg-body,
+                        0 0 0 2px functions.alpha(colors.$status-error, 0.2) !important;
+                    box-shadow:
                         inset 0 0 0 1000px colors.$bg-body,
                         0 0 0 2px functions.alpha(colors.$status-error, 0.2) !important;
                 }

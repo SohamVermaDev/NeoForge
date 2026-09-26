@@ -1,4 +1,3 @@
-require("dotenv").config();
 const mysql = require("mysql2");
 
 const pool = mysql.createPool({
@@ -11,4 +10,11 @@ const pool = mysql.createPool({
     queueLimit: 0,
 });
 
-module.exports = pool.promise();
+async function testConnection() {
+    (await pool.promise().getConnection()).release();
+}
+
+module.exports = {
+    db: pool.promise(),
+    testConnection,
+};
