@@ -171,6 +171,8 @@ watch(
                     type="text"
                     required
                     maxlength="100"
+                    pattern="[a-zA-Z0-9_]+"
+                    title="Letters, numbers, and underscores only"
                     placeholder="Choose a username"
                     autocomplete="username"
                     :class="{ 'backend-invalid': fieldErrors.username }"

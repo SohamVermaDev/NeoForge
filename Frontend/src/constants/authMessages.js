@@ -29,6 +29,11 @@ const AUTH_MESSAGES = {
         type: "error",
         affected: ["username"],
     },
+    invalid_username: {
+        message: "Usernames can only contain letters, numbers, and underscores.",
+        type: "error",
+        affected: ["username"],
+    },
     email_required: {
         text: "Please enter your email address.",
         type: "error",

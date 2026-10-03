@@ -1,3 +1,4 @@
+const usernamePattern = /^[a-zA-Z0-9_]+$/;
 const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
 const validateAuthInput = ({ requireUsername = false } = {}) => {
@@ -13,6 +14,10 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
 
         if (requireUsername && username.length > 100) {
             return res.status(422).json({ code: "username_too_long" });
+        }
+
+        if (requireUsername && !usernamePattern.test(username.trim())) {
+            return res.status(422).json({ code: "invalid_username" });
         }
 
         if (typeof email !== "string" || !email.trim()) {
