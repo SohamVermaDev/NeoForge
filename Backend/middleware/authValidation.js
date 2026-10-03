@@ -1,4 +1,4 @@
-const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+const emailPattern = /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/i;
 
 const validateAuthInput = ({ requireUsername = false } = {}) => {
     return (req, res, next) => {
@@ -26,6 +26,8 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
         if (!emailPattern.test(email.trim())) {
             return res.status(422).json({ code: "invalid_email" });
         }
+
+        req.body.email = email.trim().toLowerCase();
 
         if (typeof password !== "string" || password.length < 6) {
             return res.status(422).json({
