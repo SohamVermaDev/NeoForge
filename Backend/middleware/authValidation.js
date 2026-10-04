@@ -5,19 +5,22 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
     return (req, res, next) => {
         const { username, email, password } = req.body || {};
 
-        if (
-            requireUsername &&
-            (typeof username !== "string" || !username.trim())
-        ) {
-            return res.status(422).json({ code: "username_required" });
-        }
+        if (requireUsername) {
+            if (typeof username !== "string" || !username.trim()) {
+                return res.status(422).json({ code: "username_required" });
+            }
 
-        if (requireUsername && username.length > 100) {
-            return res.status(422).json({ code: "username_too_long" });
-        }
+            if (!usernamePattern.test(username.trim())) {
+                return res.status(422).json({ code: "invalid_username" });
+            }
 
-        if (requireUsername && !usernamePattern.test(username.trim())) {
-            return res.status(422).json({ code: "invalid_username" });
+            if (username.trim().length < 3) {
+                return res.status(422).json({ code: "username_too_short" });
+            }
+
+            if (username.trim().length > 25) {
+                return res.status(422).json({ code: "username_too_long" });
+            }
         }
 
         req.body.username = username.trim();

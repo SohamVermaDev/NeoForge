@@ -170,7 +170,8 @@ watch(
                     v-model="form.username"
                     type="text"
                     required
-                    maxlength="100"
+                    minlength="3"
+                    maxlength="25"
                     pattern="[a-zA-Z0-9_]+"
                     title="Letters, numbers, and underscores only"
                     placeholder="Choose a username"
