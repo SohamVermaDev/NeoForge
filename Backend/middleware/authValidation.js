@@ -20,6 +20,8 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
             return res.status(422).json({ code: "invalid_username" });
         }
 
+        req.body.username = username.trim();
+
         if (typeof email !== "string" || !email.trim()) {
             return res.status(422).json({ code: "email_required" });
         }
