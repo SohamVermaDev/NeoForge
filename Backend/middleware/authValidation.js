@@ -45,6 +45,10 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
             });
         }
 
+        if (Buffer.byteLength(password, "utf8") > 72) {
+            return res.status(422).json({ code: "password_too_long" });
+        }
+
         next();
     };
 };

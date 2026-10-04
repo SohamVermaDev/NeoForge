@@ -59,6 +59,11 @@ const AUTH_MESSAGES = {
         type: "error",
         affected: ["password"],
     },
+    password_too_long: {
+        text: "Password is too long.",
+        type: "error",
+        affected: ["password"],
+    },
 
     // Auth Errors
     invalid_credentials: {
