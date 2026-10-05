@@ -21,9 +21,9 @@ const validateAuthInput = ({ requireUsername = false } = {}) => {
             if (username.trim().length > 25) {
                 return res.status(422).json({ code: "username_too_long" });
             }
-        }
 
-        req.body.username = username.trim();
+            req.body.username = username.trim();
+        }
 
         if (typeof email !== "string" || !email.trim()) {
             return res.status(422).json({ code: "email_required" });
