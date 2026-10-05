@@ -173,7 +173,7 @@ watch(
                     minlength="3"
                     maxlength="25"
                     pattern="[a-zA-Z0-9_]+"
-                    title="Letters, numbers, and underscores only"
+                    title="Usernames can only use letters, numbers, and underscores"
                     placeholder="Choose a username"
                     autocomplete="username"
                     :class="{ 'backend-invalid': fieldErrors.username }"
