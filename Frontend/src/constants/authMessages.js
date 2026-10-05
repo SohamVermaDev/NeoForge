@@ -24,8 +24,18 @@ const AUTH_MESSAGES = {
         type: "error",
         affected: ["username"],
     },
+    invalid_username: {
+        text: "Usernames can only contain letters, numbers, and underscores.",
+        type: "error",
+        affected: ["username"],
+    },
     username_too_long: {
-        text: "Username must be 100 characters or fewer.",
+        text: "Username must be 25 characters or fewer.",
+        type: "error",
+        affected: ["username"],
+    },
+    username_too_short: {
+        text: "Username must be 3 characters or more.",
         type: "error",
         affected: ["username"],
     },
@@ -46,6 +56,11 @@ const AUTH_MESSAGES = {
     },
     password_too_short: {
         text: "Password must be at least 6 characters.",
+        type: "error",
+        affected: ["password"],
+    },
+    password_too_long: {
+        text: "Password is too long.",
         type: "error",
         affected: ["password"],
     },

@@ -170,7 +170,10 @@ watch(
                     v-model="form.username"
                     type="text"
                     required
-                    maxlength="100"
+                    minlength="3"
+                    maxlength="25"
+                    pattern="[a-zA-Z0-9_]+"
+                    title="Usernames can only use letters, numbers, and underscores"
                     placeholder="Choose a username"
                     autocomplete="username"
                     :class="{ 'backend-invalid': fieldErrors.username }"
@@ -187,6 +190,8 @@ watch(
                     type="email"
                     required
                     maxlength="254"
+                    title="Please enter a valid email address"
+                    pattern="[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}"
                     placeholder="Enter your email"
                     autocomplete="email"
                     :class="{ 'backend-invalid': fieldErrors.email }"
