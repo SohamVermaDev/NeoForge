@@ -24,6 +24,9 @@ import AdminSideBar from "@/components/admin/AdminSideBar.vue";
         min-height: 0;
         flex: 1;
         overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        scroll-padding: 1rem;
 
         &,
         * {
