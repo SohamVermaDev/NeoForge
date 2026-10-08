@@ -15,8 +15,6 @@ import AdminSideBar from "@/components/admin/AdminSideBar.vue";
 <style lang="scss" scoped>
 .admin-layout {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
     background-color: colors.$bg-body;
 
     main {
