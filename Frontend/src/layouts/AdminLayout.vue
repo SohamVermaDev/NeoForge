@@ -15,11 +15,15 @@ import AdminSideBar from "@/components/admin/AdminSideBar.vue";
 <style lang="scss" scoped>
 .admin-layout {
     display: flex;
+    height: 100dvh;
+    overflow: hidden;
     background-color: colors.$bg-body;
 
     main {
-        width: 100%;
-        min-height: 100vh;
+        min-width: 0;
+        min-height: 0;
+        flex: 1;
+        overflow: auto;
     }
 }
 </style>

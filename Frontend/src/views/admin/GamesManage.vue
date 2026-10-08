@@ -688,7 +688,6 @@ onUnmounted(() => {
     transition: variables.$transition-smooth;
     position: relative;
     padding: 1rem 1rem;
-    overflow-x: visible;
 
     .table-controls {
         @include mixins.flex-between;
@@ -920,9 +919,6 @@ onUnmounted(() => {
     }
 
     .table-responsive {
-        overflow-x: auto;
-        overflow-y: hidden;
-
         .game-table {
             width: 100%;
             border-collapse: collapse;
