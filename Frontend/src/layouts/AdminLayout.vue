@@ -15,13 +15,44 @@ import AdminSideBar from "@/components/admin/AdminSideBar.vue";
 <style lang="scss" scoped>
 .admin-layout {
     display: flex;
-    justify-content: flex-start;
-    align-items: flex-start;
+    height: 100dvh;
+    overflow: hidden;
     background-color: colors.$bg-body;
 
     main {
-        width: 100%;
-        min-height: 100vh;
+        min-width: 0;
+        min-height: 0;
+        flex: 1;
+        overflow: auto;
+        overscroll-behavior: contain;
+        scrollbar-gutter: stable;
+        scroll-padding: 1rem;
+
+        &,
+        * {
+            &::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: colors.$bg-sidebar;
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: functions.alpha(colors.$accent, 0.4);
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: colors.$accent;
+            }
+
+            &::-webkit-scrollbar-corner {
+                background: colors.$bg-sidebar;
+            }
+        }
     }
 }
 </style>
