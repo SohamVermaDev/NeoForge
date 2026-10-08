@@ -501,75 +501,73 @@ onUnmounted(() => {
                 </div>
             </div>
         </div>
-        <div class="table-responsive">
-            <table class="game-table">
-                <thead>
-                    <tr>
-                        <th :class="['sortable', { active: sortBy === 'id' }]" @click="handleSort('id')">
-                            ID <i :class="getSortIconClass('id')"></i>
-                        </th>
-                        <th :class="['sortable', { active: sortBy === 'title' }]" @click="handleSort('title')">
-                            Game Title <i :class="getSortIconClass('title')"></i>
-                        </th>
-                        <th>Developer/Publisher</th>
-                        <th>Genre</th>
-                        <th :class="['sortable', { active: sortBy === 'price' }]" @click="handleSort('price')">
-                            Price <i :class="getSortIconClass('price')"></i>
-                        </th>
-                        <th>Platform</th>
-                        <th :class="['sortable', { active: sortBy === 'rating' }]" @click="handleSort('rating')">
-                            Rating <i :class="getSortIconClass('rating')"></i>
-                        </th>
-                        <th :class="['sortable', { active: sortBy === 'stock' }]" @click="handleSort('stock')">
-                            Stock Status <i :class="getSortIconClass('stock')"></i>
-                        </th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="game in paginatedGames" :key="game.id">
-                        <td>{{ game.id }}</td>
-                        <td>{{ game.title }}</td>
-                        <td>{{ game.developer }}</td>
-                        <td>{{ game.genre }}</td>
-                        <td>${{ game.price }}</td>
-                        <td>
-                            <div class="platforms">
-                                <span v-for="platform in game.platforms" :class="platform" class="platform">
-                                    {{ platform.toUpperCase() }}
-                                </span>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="rating-container">
-                                <div class="rating">
-                                    <span class="rating-value">{{ game.rating }}&nbsp; </span>
-                                    <span class="rating-max">/ 10</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div
-                                        :class="getRatingClass(game.rating)"
-                                        :style="{ width: `${(game.rating / 10) * 100}%` }"
-                                        class="progress-fill"
-                                    ></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
-                                {{ statusMap[getStockStatus(game.stock)] }}
+        <table class="game-table">
+            <thead>
+                <tr>
+                    <th :class="['sortable', { active: sortBy === 'id' }]" @click="handleSort('id')">
+                        ID <i :class="getSortIconClass('id')"></i>
+                    </th>
+                    <th :class="['sortable', { active: sortBy === 'title' }]" @click="handleSort('title')">
+                        Game Title <i :class="getSortIconClass('title')"></i>
+                    </th>
+                    <th>Developer/Publisher</th>
+                    <th>Genre</th>
+                    <th :class="['sortable', { active: sortBy === 'price' }]" @click="handleSort('price')">
+                        Price <i :class="getSortIconClass('price')"></i>
+                    </th>
+                    <th>Platform</th>
+                    <th :class="['sortable', { active: sortBy === 'rating' }]" @click="handleSort('rating')">
+                        Rating <i :class="getSortIconClass('rating')"></i>
+                    </th>
+                    <th :class="['sortable', { active: sortBy === 'stock' }]" @click="handleSort('stock')">
+                        Stock Status <i :class="getSortIconClass('stock')"></i>
+                    </th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="game in paginatedGames" :key="game.id">
+                    <td>{{ game.id }}</td>
+                    <td>{{ game.title }}</td>
+                    <td>{{ game.developer }}</td>
+                    <td>{{ game.genre }}</td>
+                    <td>${{ game.price }}</td>
+                    <td>
+                        <div class="platforms">
+                            <span v-for="platform in game.platforms" :class="platform" class="platform">
+                                {{ platform.toUpperCase() }}
                             </span>
-                        </td>
-                        <td>
-                            <div class="actions">
-                                <button class="action-btn edit">Edit</button>
-                                <button class="action-btn delete">Delete</button>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="rating-container">
+                            <div class="rating">
+                                <span class="rating-value">{{ game.rating }}&nbsp; </span>
+                                <span class="rating-max">/ 10</span>
                             </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
+                            <div class="progress-bar">
+                                <div
+                                    :class="getRatingClass(game.rating)"
+                                    :style="{ width: `${(game.rating / 10) * 100}%` }"
+                                    class="progress-fill"
+                                ></div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
+                            {{ statusMap[getStockStatus(game.stock)] }}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="actions">
+                            <button class="action-btn edit">Edit</button>
+                            <button class="action-btn delete">Delete</button>
+                        </div>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
         <div class="table-footer">
             <div class="pagination-info">
                 Showing <span>{{ rangeStart }}</span
@@ -918,223 +916,105 @@ onUnmounted(() => {
         }
     }
 
-    .table-responsive {
-        .game-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9rem;
-            min-width: 90rem;
+    .game-table {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.9rem;
+        min-width: 90rem;
 
-            thead {
-                tr {
-                    th {
-                        padding: 1rem 1.25rem;
-                        text-align: left;
-                        border-bottom: variables.$border-light;
-                        width: min-content;
-                        height: 1.75rem;
-                        background-color: colors.$gray-800;
+        thead {
+            tr {
+                th {
+                    padding: 1rem 1.25rem;
+                    text-align: left;
+                    border-bottom: variables.$border-light;
+                    width: min-content;
+                    height: 1.75rem;
+                    background-color: colors.$gray-800;
+                    color: colors.$text-primary;
+                    font-weight: 600;
+                    letter-spacing: 0.05rem;
+                    cursor: default;
+                    font-size: 0.95rem;
+
+                    &::selection {
                         color: colors.$text-primary;
-                        font-weight: 600;
-                        letter-spacing: 0.05rem;
-                        cursor: default;
-                        font-size: 0.95rem;
+                        background: functions.alpha(colors.$accent, 0.5);
+                    }
 
-                        &::selection {
-                            color: colors.$text-primary;
-                            background: functions.alpha(colors.$accent, 0.5);
+                    &.sortable {
+                        cursor: pointer;
+                        transition: variables.$transition-smooth;
+
+                        i {
+                            color: colors.$accent;
+                            font-size: 1rem;
+                            margin-left: 0.4rem;
+                            width: 1.05rem;
+                            height: 1.05rem;
+                            opacity: 0.5;
                         }
 
-                        &.sortable {
-                            cursor: pointer;
-                            transition: variables.$transition-smooth;
+                        &:hover {
+                            background: functions.alpha(colors.$accent, 0.1);
 
-                            i {
-                                color: colors.$accent;
-                                font-size: 1rem;
-                                margin-left: 0.4rem;
-                                width: 1.05rem;
-                                height: 1.05rem;
-                                opacity: 0.5;
-                            }
-
-                            &:hover {
-                                background: functions.alpha(colors.$accent, 0.1);
-
-                                i {
-                                    opacity: 1;
-                                }
-                            }
-                        }
-
-                        &.active {
                             i {
                                 opacity: 1;
                             }
                         }
                     }
+
+                    &.active {
+                        i {
+                            opacity: 1;
+                        }
+                    }
                 }
             }
+        }
 
-            tbody {
-                tr {
-                    transition: variables.$transition-smooth;
-                    height: 3.75rem;
+        tbody {
+            tr {
+                transition: variables.$transition-smooth;
+                height: 3.75rem;
 
-                    td {
-                        border-bottom: variables.$border-light;
-                        color: colors.$text-secondary;
-                        padding: 1rem 1.25rem;
-                        text-align: left;
-                        width: min-content;
-                        height: 1.75rem;
+                td {
+                    border-bottom: variables.$border-light;
+                    color: colors.$text-secondary;
+                    padding: 1rem 1.25rem;
+                    text-align: left;
+                    width: min-content;
+                    height: 1.75rem;
 
-                        .platforms {
-                            display: flex;
-                            gap: 0.4rem;
+                    .platforms {
+                        display: flex;
+                        gap: 0.4rem;
 
-                            @at-root .platform {
-                                padding: 0.2rem 0.5rem;
-                                border-radius: 0.25rem;
-                                font-size: 0.75rem;
-                                font-weight: 600;
-                                line-height: 150%;
-                                user-select: none;
-
-                                &.nsw {
-                                    @include mixins.status-badge(
-                                        colors.$status-error,
-                                        functions.alpha(colors.$status-error, 0.1),
-                                        functions.alpha(colors.$status-error, 0.2)
-                                    );
-                                }
-
-                                &.pc {
-                                    @include mixins.status-badge(
-                                        colors.$blue-500,
-                                        functions.alpha(colors.$blue-500, 0.1),
-                                        functions.alpha(colors.$blue-500, 0.2)
-                                    );
-                                }
-
-                                &.xsx {
-                                    @include mixins.status-badge(
-                                        colors.$status-success,
-                                        functions.alpha(colors.$status-success, 0.1),
-                                        functions.alpha(colors.$status-success, 0.2)
-                                    );
-                                }
-
-                                &.ps4 {
-                                    color: #e50bf5;
-                                    background: functions.alpha(#f805f0, 0.1);
-                                    border: 1px solid functions.alpha(#f50bed, 0.2);
-                                }
-
-                                &.ps5 {
-                                    color: #0006ff;
-                                    background: functions.alpha(#0006ff, 0.1);
-                                    border: 1px solid functions.alpha(#0006ff, 0.2);
-                                }
-                            }
-                        }
-
-                        .rating-container {
-                            display: flex;
-                            align-items: center;
-                            gap: 0.6rem;
-
-                            .rating {
-                                .rating-value {
-                                    font-weight: 600;
-                                    color: colors.$text-primary;
-                                    user-select: none;
-                                }
-
-                                .rating-max {
-                                    font-size: 0.7rem;
-                                    color: colors.$text-secondary;
-                                    user-select: none;
-                                }
-                            }
-
-                            .progress-bar {
-                                flex: 1;
-                                background: colors.$gray-600;
-                                border-radius: variables.$radius;
-                                height: 0.35rem;
-                                overflow: hidden;
-                                min-width: 5rem;
-
-                                .progress-fill {
-                                    transition: variables.$transition-smooth;
-                                    height: 100%;
-                                    border-radius: variables.$radius;
-
-                                    &.high {
-                                        background: colors.$status-success;
-                                    }
-
-                                    &.medium {
-                                        background: colors.$status-warning;
-                                    }
-
-                                    &.low {
-                                        background: colors.$status-error;
-                                    }
-                                }
-                            }
-                        }
-
-                        @at-root .status-badge {
-                            display: inline-block;
-                            padding: 0.25rem 0.75rem;
-                            border-radius: variables.$radius-lg;
+                        @at-root .platform {
+                            padding: 0.2rem 0.5rem;
+                            border-radius: 0.25rem;
                             font-size: 0.75rem;
                             font-weight: 600;
-                            text-align: center;
+                            line-height: 150%;
                             user-select: none;
-                            position: relative;
 
-                            &::before {
-                                content: "";
-                                opacity: 0;
-                                position: absolute;
-                                bottom: -25%;
-                                left: 50%;
-                                transform: translateX(-50%);
-                                border-width: 7px;
-                                border-style: solid;
-                                border-color: transparent transparent colors.$bg-sidebar transparent;
-                                z-index: 1000;
-                                transition: opacity 0.3s ease;
+                            &.nsw {
+                                @include mixins.status-badge(
+                                    colors.$status-error,
+                                    functions.alpha(colors.$status-error, 0.1),
+                                    functions.alpha(colors.$status-error, 0.2)
+                                );
                             }
 
-                            &::after {
-                                content: attr(stock);
-                                opacity: 0;
-                                position: absolute;
-                                bottom: -125%;
-                                left: 50%;
-                                transform: translateX(-50%);
-                                background: colors.$bg-sidebar;
-                                color: colors.$text-primary;
-                                padding: 0.25rem 0.5rem;
-                                border-radius: 4px;
-                                font-size: 0.9rem;
-                                width: auto;
-                                z-index: 1000;
-                                transition: opacity 0.3s ease;
+                            &.pc {
+                                @include mixins.status-badge(
+                                    colors.$blue-500,
+                                    functions.alpha(colors.$blue-500, 0.1),
+                                    functions.alpha(colors.$blue-500, 0.2)
+                                );
                             }
 
-                            &:hover {
-                                &::after,
-                                &::before {
-                                    opacity: 1;
-                                }
-                            }
-
-                            &.in-stock {
+                            &.xsx {
                                 @include mixins.status-badge(
                                     colors.$status-success,
                                     functions.alpha(colors.$status-success, 0.1),
@@ -1142,72 +1022,188 @@ onUnmounted(() => {
                                 );
                             }
 
-                            &.low-stock {
-                                @include mixins.status-badge(
-                                    colors.$status-warning,
-                                    functions.alpha(colors.$status-warning, 0.1),
-                                    functions.alpha(colors.$status-warning, 0.2)
-                                );
+                            &.ps4 {
+                                color: #e50bf5;
+                                background: functions.alpha(#f805f0, 0.1);
+                                border: 1px solid functions.alpha(#f50bed, 0.2);
                             }
 
-                            &.out-of-stock {
-                                @include mixins.status-badge(
-                                    colors.$status-error,
-                                    functions.alpha(colors.$status-error, 0.1),
-                                    functions.alpha(colors.$status-error, 0.2)
-                                );
+                            &.ps5 {
+                                color: #0006ff;
+                                background: functions.alpha(#0006ff, 0.1);
+                                border: 1px solid functions.alpha(#0006ff, 0.2);
                             }
                         }
+                    }
 
-                        .actions {
-                            display: flex;
-                            gap: 0.5rem;
+                    .rating-container {
+                        display: flex;
+                        align-items: center;
+                        gap: 0.6rem;
 
-                            .action-btn {
-                                @include mixins.focus-ring;
-                                background: transparent;
-                                border: none;
-                                padding: 0.3rem 0.8rem;
-                                border-radius: 6px;
-                                font-size: 0.75rem;
-                                font-weight: 500;
-                                cursor: pointer;
-                                transition: all 0.2s ease;
+                        .rating {
+                            .rating-value {
+                                font-weight: 600;
+                                color: colors.$text-primary;
                                 user-select: none;
+                            }
 
-                                &.edit {
-                                    color: colors.$accent;
-                                    background: functions.alpha(colors.$accent, 0.1);
-                                    border: 1px solid functions.alpha(colors.$accent, 0.2);
-
-                                    &:hover {
-                                        background: colors.$accent;
-                                        color: white;
-                                    }
-                                }
-
-                                &.delete {
-                                    color: colors.$status-error;
-                                    background: functions.alpha(colors.$status-error, 0.1);
-                                    border: 1px solid functions.alpha(colors.$status-error, 0.2);
-
-                                    &:hover {
-                                        background: colors.$status-error;
-                                        color: white;
-                                    }
-                                }
+                            .rating-max {
+                                font-size: 0.7rem;
+                                color: colors.$text-secondary;
+                                user-select: none;
                             }
                         }
 
-                        &::selection {
-                            color: colors.$text-primary;
-                            background: functions.alpha(colors.$accent, 0.35);
+                        .progress-bar {
+                            flex: 1;
+                            background: colors.$gray-600;
+                            border-radius: variables.$radius;
+                            height: 0.35rem;
+                            overflow: hidden;
+                            min-width: 5rem;
+
+                            .progress-fill {
+                                transition: variables.$transition-smooth;
+                                height: 100%;
+                                border-radius: variables.$radius;
+
+                                &.high {
+                                    background: colors.$status-success;
+                                }
+
+                                &.medium {
+                                    background: colors.$status-warning;
+                                }
+
+                                &.low {
+                                    background: colors.$status-error;
+                                }
+                            }
                         }
                     }
 
-                    &:hover {
-                        background: functions.alpha(colors.$accent, 0.05);
+                    @at-root .status-badge {
+                        display: inline-block;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: variables.$radius-lg;
+                        font-size: 0.75rem;
+                        font-weight: 600;
+                        text-align: center;
+                        user-select: none;
+                        position: relative;
+
+                        &::before {
+                            content: "";
+                            opacity: 0;
+                            position: absolute;
+                            bottom: -25%;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            border-width: 7px;
+                            border-style: solid;
+                            border-color: transparent transparent colors.$bg-sidebar transparent;
+                            z-index: 1000;
+                            transition: opacity 0.3s ease;
+                        }
+
+                        &::after {
+                            content: attr(stock);
+                            opacity: 0;
+                            position: absolute;
+                            bottom: -125%;
+                            left: 50%;
+                            transform: translateX(-50%);
+                            background: colors.$bg-sidebar;
+                            color: colors.$text-primary;
+                            padding: 0.25rem 0.5rem;
+                            border-radius: 4px;
+                            font-size: 0.9rem;
+                            width: auto;
+                            z-index: 1000;
+                            transition: opacity 0.3s ease;
+                        }
+
+                        &:hover {
+                            &::after,
+                            &::before {
+                                opacity: 1;
+                            }
+                        }
+
+                        &.in-stock {
+                            @include mixins.status-badge(
+                                colors.$status-success,
+                                functions.alpha(colors.$status-success, 0.1),
+                                functions.alpha(colors.$status-success, 0.2)
+                            );
+                        }
+
+                        &.low-stock {
+                            @include mixins.status-badge(
+                                colors.$status-warning,
+                                functions.alpha(colors.$status-warning, 0.1),
+                                functions.alpha(colors.$status-warning, 0.2)
+                            );
+                        }
+
+                        &.out-of-stock {
+                            @include mixins.status-badge(
+                                colors.$status-error,
+                                functions.alpha(colors.$status-error, 0.1),
+                                functions.alpha(colors.$status-error, 0.2)
+                            );
+                        }
                     }
+
+                    .actions {
+                        display: flex;
+                        gap: 0.5rem;
+
+                        .action-btn {
+                            @include mixins.focus-ring;
+                            background: transparent;
+                            border: none;
+                            padding: 0.3rem 0.8rem;
+                            border-radius: 6px;
+                            font-size: 0.75rem;
+                            font-weight: 500;
+                            cursor: pointer;
+                            transition: all 0.2s ease;
+                            user-select: none;
+
+                            &.edit {
+                                color: colors.$accent;
+                                background: functions.alpha(colors.$accent, 0.1);
+                                border: 1px solid functions.alpha(colors.$accent, 0.2);
+
+                                &:hover {
+                                    background: colors.$accent;
+                                    color: white;
+                                }
+                            }
+
+                            &.delete {
+                                color: colors.$status-error;
+                                background: functions.alpha(colors.$status-error, 0.1);
+                                border: 1px solid functions.alpha(colors.$status-error, 0.2);
+
+                                &:hover {
+                                    background: colors.$status-error;
+                                    color: white;
+                                }
+                            }
+                        }
+                    }
+
+                    &::selection {
+                        color: colors.$text-primary;
+                        background: functions.alpha(colors.$accent, 0.35);
+                    }
+                }
+
+                &:hover {
+                    background: functions.alpha(colors.$accent, 0.05);
                 }
             }
         }
