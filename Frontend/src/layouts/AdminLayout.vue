@@ -24,6 +24,32 @@ import AdminSideBar from "@/components/admin/AdminSideBar.vue";
         min-height: 0;
         flex: 1;
         overflow: auto;
+
+        &,
+        * {
+            &::-webkit-scrollbar {
+                width: 10px;
+                height: 10px;
+            }
+
+            &::-webkit-scrollbar-track {
+                background: colors.$bg-sidebar;
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+                background: functions.alpha(colors.$accent, 0.4);
+                border-radius: 10px;
+            }
+
+            &::-webkit-scrollbar-thumb:hover {
+                background: colors.$accent;
+            }
+
+            &::-webkit-scrollbar-corner {
+                background: colors.$bg-sidebar;
+            }
+        }
     }
 }
 </style>
