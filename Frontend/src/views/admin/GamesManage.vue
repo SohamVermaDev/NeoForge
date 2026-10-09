@@ -920,7 +920,7 @@ onUnmounted(() => {
         width: 100%;
         border-collapse: collapse;
         font-size: 0.9rem;
-        min-width: 90rem;
+        min-width: 91.5rem;
 
         thead {
             tr {
