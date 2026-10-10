@@ -691,7 +691,6 @@ onUnmounted(() => {
         @include mixins.flex-between;
         margin-bottom: 1.5rem;
         gap: 1rem;
-        flex-wrap: wrap;
 
         .search-wrapper {
             @include mixins.flex-center;
@@ -1212,7 +1211,6 @@ onUnmounted(() => {
     .table-footer {
         @include mixins.flex-between;
         padding-top: 1rem;
-        flex-wrap: wrap;
         gap: 1rem;
 
         .pagination-info {
