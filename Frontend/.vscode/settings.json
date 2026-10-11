@@ -1,0 +1,14 @@
+{
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.patterns": {
+        "vite.config.*": "jsconfig*",
+        "package.json": "package-lock.json, .eslint*, eslint*, .prettier*"
+    },
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "editor.formatOnSave": true,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit"
+    },
+    "eslint.validate": ["vue", "html", "javascript"],
+    "eslint.workingDirectories": [{ "mode": "auto" }]
+}
