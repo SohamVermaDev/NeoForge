@@ -1,0 +1,76 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "NeoForge Dev Terminals",
+            "dependsOn": ["Git", "Vite", "Frontend", "Nodemon", "Backend"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Git",
+            "icon": {
+                "id": "terminal-git-bash",
+                "color": "terminal.ansiRed"
+            },
+            "type": "shell",
+            "command": "pwsh -NoExit -Command \"git status\"",
+            "presentation": { "group": "group-1" }
+        },
+        {
+            "label": "Vite",
+            "icon": {
+                "id": "zap",
+                "color": "terminal.ansiGreen"
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder:Frontend}"
+            },
+            "command": "npm run dev",
+            "presentation": { "group": "Dev Servers", "panel": "new" }
+        },
+        {
+            "label": "Nodemon",
+            "icon": {
+                "id": "sync",
+                "color": "terminal.ansiWhite"
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder:Backend}"
+            },
+            "command": "npm run dev",
+            "presentation": { "group": "Dev Servers", "panel": "new" }
+        },
+        {
+            "label": "Frontend",
+            "icon": {
+                "id": "browser",
+                "color": "terminal.ansiBlue"
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder:Frontend}"
+            },
+            "command": "pwsh -NoExit",
+            "presentation": { "group": "group-3" }
+        },
+        {
+            "label": "Backend",
+            "icon": {
+                "id": "server",
+                "color": "terminal.ansiYellow"
+            },
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder:Backend}"
+            },
+            "command": "pwsh -NoExit",
+            "presentation": { "group": "group-4" }
+        }
+    ]
+}

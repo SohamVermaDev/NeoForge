@@ -20,7 +20,8 @@ frontend/build/
 Thumbs.db
 
 # Editor folders (optional – keep if you share workspace config)
-.vscode/
+**/.vscode/*
+!/.vscode/tasks.json
 .idea/
 
 # Temp files
