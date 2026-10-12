@@ -504,9 +504,7 @@ onUnmounted(() => {
         <table class="game-table">
             <thead>
                 <tr>
-                    <th :class="['sortable', { active: sortBy === 'id' }]" @click="handleSort('id')">
-                        ID <i :class="getSortIconClass('id')"></i>
-                    </th>
+                    <th :class="['sortable', { active: sortBy === 'id' }]" @click="handleSort('id')">ID <i :class="getSortIconClass('id')"></i></th>
                     <th :class="['sortable', { active: sortBy === 'title' }]" @click="handleSort('title')">
                         Game Title <i :class="getSortIconClass('title')"></i>
                     </th>
