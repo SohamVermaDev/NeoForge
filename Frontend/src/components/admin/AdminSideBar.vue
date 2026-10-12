@@ -3,7 +3,6 @@ import { onMounted, ref } from "vue";
 
 const collapsed = ref(false);
 
-// biome-ignore lint/correctness/noUnusedVariables: used in hamburger icon's @click directive
 const collapse_sidebar = () => {
     collapsed.value = !collapsed.value;
     localStorage.setItem("IsCollapsed", collapsed.value);
@@ -16,7 +15,6 @@ onMounted(() => {
     }
 });
 
-// biome-ignore lint/correctness/noUnusedVariables: used in v-for template
 const navLinks = [
     { icon: "fas fa-home", label: "Dashboard", route: "/admin/dashboard" },
     { icon: "fa-solid fa-users", label: "Customers", route: "/admin" },
