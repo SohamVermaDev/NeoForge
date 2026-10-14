@@ -83,7 +83,7 @@ const handleToggle = () => {
     }
 
     &.greeting-panel {
-        background: linear-gradient(160deg, #061935, colors.$accent);
+        background: linear-gradient(160deg, #04122a, colors.$accent);
         border-radius: variables.$radius-lg;
         position: relative;
         overflow: hidden;

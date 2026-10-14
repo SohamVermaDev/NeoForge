@@ -53,14 +53,14 @@ body {
     .logo {
         font-family: "Orbitron", sans-serif;
         font-optical-sizing: auto;
-        font-style: italic;
-        font-weight: 600;
+        font-weight: 700;
         font-size: 1.5rem;
-        letter-spacing: 0.1rem;
+        letter-spacing: 0.05rem;
+        font-style: normal;
+        user-select: none;
 
         .neo {
             color: colors.$accent;
-            text-shadow: colors.$accent 1px 0px 4px;
         }
 
         .forge {
