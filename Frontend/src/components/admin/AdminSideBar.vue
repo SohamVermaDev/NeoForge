@@ -10,9 +10,7 @@ const toggleCollapse = () => {
 
 onMounted(() => {
     const saved = localStorage.getItem("IsCollapsed");
-    if (saved !== null) {
-        collapsed.value = saved === "true";
-    }
+    if (saved !== null) collapsed.value = saved === "true";
 });
 
 const navLinks = [
