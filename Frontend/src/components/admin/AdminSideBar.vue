@@ -28,7 +28,7 @@ const navLinks = [
 <template>
     <div class="sidebar" :class="{ collapsed: collapsed }">
         <div class="heading">
-            <h2 v-if="collapsed === false" class="logo"><span class="neo">Neo</span><span class="forge">Forge</span></h2>
+            <h2 v-if="!collapsed" class="logo"><span class="neo">Neo</span><span class="forge">Forge</span></h2>
             <button @click="toggleCollapse()">
                 <i class="fas fa-bars" />
             </button>
