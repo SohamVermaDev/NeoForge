@@ -36,9 +36,7 @@ const navLinks = [
             <li v-for="link in navLinks" :key="link.route" class="list-item">
                 <router-link :to="link.route" exact-active-class="active" class="link">
                     <i :class="link.icon" class="icon" />
-                    <p v-if="collapsed === false" class="nav-text">
-                        {{ link.label }}
-                    </p>
+                    <p class="nav-text">{{ link.label }}</p>
                 </router-link>
             </li>
         </ul>
@@ -91,14 +89,14 @@ const navLinks = [
         border-top: variables.$border-base;
         margin: 0;
         width: 100%;
+        flex-shrink: 0;
     }
 
     .nav-links {
-        @include mixins.flex-center;
-        flex-direction: column;
-        gap: 1.25rem;
-        margin-top: 2rem;
-        overflow-x: clip;
+        @include mixins.flex-column;
+        gap: 0.35rem;
+        margin-top: 1.25rem;
+        padding: 0 0.75rem;
         width: 100%;
 
         .list-item {
@@ -106,27 +104,32 @@ const navLinks = [
 
             .link {
                 @include mixins.flex-center;
-                transition: variables.$transition-smooth;
-                justify-content: left;
-                height: 50px;
-                font-size: 1.2rem;
+                justify-content: flex-start;
+                gap: 1rem;
+                height: 46px;
+                padding: 0 0.75rem;
+                border-radius: variables.$radius;
+                font-size: 1rem;
+                font-weight: 500;
                 cursor: pointer;
                 user-select: none;
+                transition: variables.$transition-smooth;
 
                 &:focus-visible {
                     @include mixins.focus-ring;
-                    background: functions.alpha(colors.$accent, 0.08);
                 }
 
                 .icon {
+                    font-size: 1.1rem;
+                    width: 1.5rem;
+                    text-align: center;
+                    flex-shrink: 0;
                     transition: variables.$transition-smooth;
-                    font-size: 1.4rem;
-                    width: 20px;
-                    margin-left: 1.5rem;
                 }
 
                 .nav-text {
-                    margin-left: 1.5rem;
+                    white-space: nowrap;
+                    transition: opacity 0.2s ease;
                 }
 
                 &:not(.active) {
@@ -136,12 +139,10 @@ const navLinks = [
                     }
 
                     &:hover {
-                        // background: functions.alpha(colors.$gray-600, 0.9);
-                        background: colors.$gray-600;
-                        opacity: 0.9;
+                        background: functions.alpha(colors.$accent, 0.06);
 
                         .icon {
-                            color: colors.$accent-hover;
+                            color: colors.$accent;
                         }
 
                         .nav-text {
@@ -151,7 +152,7 @@ const navLinks = [
                 }
 
                 &.active {
-                    border-right: 0.5rem solid colors.$accent;
+                    background: functions.alpha(colors.$accent, 0.1);
 
                     .icon {
                         color: colors.$accent;
@@ -167,6 +168,19 @@ const navLinks = [
 
     &.collapsed {
         width: 5rem;
+
+        .nav-links {
+            padding: 0 0.75rem;
+
+            .link {
+                padding-left: 1rem;
+
+                .nav-text {
+                    opacity: 0;
+                    pointer-events: none;
+                }
+            }
+        }
     }
 }
 </style>
