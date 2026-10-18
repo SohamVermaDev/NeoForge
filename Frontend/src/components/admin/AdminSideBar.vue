@@ -1,11 +1,24 @@
 <script setup>
-import { onMounted, ref } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { useRouter } from "vue-router";
+
+const authStore = useAuthStore();
+const router = useRouter();
+const user = computed(() => authStore.user);
 
 const collapsed = ref(false);
 
 const toggleCollapse = () => {
     collapsed.value = !collapsed.value;
     localStorage.setItem("IsCollapsed", collapsed.value);
+};
+
+const userInitial = computed(() => user.value.username?.charAt(0).toUpperCase() || "?");
+
+const handleLogout = () => {
+    authStore.logout();
+    router.push("/login");
 };
 
 onMounted(() => {
@@ -51,6 +64,19 @@ const navLinks = [
                     </router-link>
                 </li>
             </ul>
+
+            <div class="profile">
+                <button class="profile-info">
+                    <span class="avatar">
+                        {{ userInitial }}
+                    </span>
+                    <span v-if="!collapsed" class="name">{{ user.username }}</span>
+                </button>
+
+                <button v-if="!collapsed" class="logout" @click="handleLogout">
+                    <i class="fas fa-arrow-right-from-bracket" />
+                </button>
+            </div>
         </div>
     </div>
 </template>
@@ -192,6 +218,88 @@ const navLinks = [
         }
     }
 
+    .profile {
+        @include mixins.flex-center;
+        justify-content: flex-start;
+        gap: 0.75rem;
+        position: relative;
+        padding: 1rem;
+        padding-left: 0.75rem;
+        flex-shrink: 0;
+        transition: variables.$transition-smooth;
+
+        .profile-info {
+            @include mixins.flex-center;
+            @include mixins.focus-ring;
+            gap: 0.75rem;
+            min-width: 0;
+            border-radius: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            cursor: pointer;
+            background: transparent;
+            border: none;
+            font: inherit;
+            color: inherit;
+            text-align: inherit;
+            transition: variables.$transition-smooth;
+            user-select: none;
+
+            .avatar {
+                width: 2.25rem;
+                height: 2.25rem;
+                border-radius: 50%;
+                background: functions.alpha(colors.$accent, 0.15);
+                color: colors.$accent;
+                font-weight: 700;
+                font-size: 0.95rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                user-select: none;
+                border: 1px solid functions.alpha(colors.$accent, 0.25);
+            }
+
+            .name {
+                font-size: 0.9rem;
+                font-weight: 600;
+                color: colors.$text-primary;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            &:hover {
+                background: functions.alpha(colors.$accent, 0.06);
+            }
+        }
+
+        .logout {
+            background: transparent;
+            border: none;
+            color: colors.$text-secondary;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-left: auto;
+            padding: 0.5rem;
+            border-radius: variables.$radius;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: variables.$transition-smooth;
+            flex-shrink: 0;
+
+            &:hover {
+                color: colors.$status-error;
+                background: functions.alpha(colors.$status-error, 0.08);
+            }
+
+            &:focus-visible {
+                @include mixins.focus-ring(colors.$bg-card, colors.$status-error);
+            }
+        }
+    }
+
     &.collapsed {
         width: 5rem;
 
@@ -205,6 +313,14 @@ const navLinks = [
                     opacity: 0;
                     pointer-events: none;
                 }
+            }
+        }
+
+        .profile {
+            padding: 1rem 0.625rem;
+
+            .profile-info {
+                flex: none;
             }
         }
     }
