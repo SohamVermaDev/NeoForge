@@ -19,7 +19,6 @@ const navLinks = [
     { icon: "fa-solid fa-cubes", label: "Games", route: "/admin/games" },
     { icon: "fa-solid fa-cart-shopping", label: "Orders", route: "/admin" },
     { icon: "fa-solid fa-chart-pie", label: "Reports", route: "/admin" },
-    { icon: "fa-solid fa-gear", label: "Settings", route: "/admin" },
 ];
 </script>
 
@@ -31,7 +30,9 @@ const navLinks = [
                 <i class="fas fa-bars" />
             </button>
         </div>
+
         <hr class="divider" />
+
         <ul class="nav-links">
             <li v-for="link in navLinks" :key="link.route" class="list-item">
                 <router-link :to="link.route" exact-active-class="active" class="link">
@@ -40,6 +41,17 @@ const navLinks = [
                 </router-link>
             </li>
         </ul>
+        
+        <div class="bottom-block">
+            <ul class="nav-links">
+                <li class="list-item">
+                    <router-link to="/admin" exact-active-class="active" class="link">
+                        <i class="fas fa-gear icon" />
+                        <p v-if="!collapsed" class="nav-text">Settings</p>
+                    </router-link>
+                </li>
+            </ul>
+        </div>
     </div>
 </template>
 
@@ -55,6 +67,8 @@ const navLinks = [
     border-right: 2px solid colors.$border-divider;
     background-color: colors.$bg-sidebar;
     transition: variables.$transition-smooth;
+    display: flex;
+    flex-direction: column;
 
     .heading {
         @include mixins.flex-center;
@@ -163,6 +177,18 @@ const navLinks = [
                     }
                 }
             }
+        }
+    }
+
+    .bottom-block {
+        margin-top: auto;
+        padding-top: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+
+        .nav-links {
+            margin-top: 0;
         }
     }
 
