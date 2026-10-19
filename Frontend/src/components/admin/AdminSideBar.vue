@@ -14,9 +14,36 @@ const toggleCollapse = () => {
     localStorage.setItem("IsCollapsed", collapsed.value);
 };
 
+const popoverOpen = ref(false);
+const profileTrigger = ref(null);
+const popoverLogoutRef = ref(null);
+
 const userInitial = computed(() => user.value.username?.charAt(0).toUpperCase() || "?");
 
+const togglePopover = () => {
+    if (collapsed.value) {
+        toggleCollapse();
+        setTimeout(() => {
+            popoverOpen.value = true;
+        }, 300);
+    } else {
+        popoverOpen.value = !popoverOpen.value;
+    }
+};
+
+const closePopover = () => {
+    popoverOpen.value = false;
+};
+
+const handleClickOutside = (e) => {
+    if (popoverOpen.value && profileTrigger.value && !profileTrigger.value.contains(e.target) && !e.target.closest(".popover")) {
+        closePopover();
+    }
+};
+
+
 const handleLogout = () => {
+    closePopover();
     authStore.logout();
     router.push("/login");
 };
@@ -24,6 +51,8 @@ const handleLogout = () => {
 onMounted(() => {
     const saved = localStorage.getItem("IsCollapsed");
     if (saved !== null) collapsed.value = saved === "true";
+    
+    document.addEventListener("click", handleClickOutside);
 });
 
 const navLinks = [
@@ -66,7 +95,7 @@ const navLinks = [
             </ul>
 
             <div class="profile">
-                <button class="profile-info">
+                <button class="profile-info" ref="profileTrigger" @click="togglePopover">
                     <span class="avatar">
                         {{ userInitial }}
                     </span>
@@ -76,6 +105,22 @@ const navLinks = [
                 <button v-if="!collapsed" class="logout" @click="handleLogout">
                     <i class="fas fa-arrow-right-from-bracket" />
                 </button>
+
+                <Transition name="popover">
+                    <div v-if="popoverOpen" class="popover">
+                        <div class="popover-header">
+                            <p class="popover-name">{{ user.username }}</p>
+                            <p class="popover-email">{{ user.email }}</p>
+                        </div>
+
+                        <hr class="popover-divider" />
+
+                        <button class="popover-logout" ref="popoverLogoutRef" @click="handleLogout">
+                            <i class="fas fa-arrow-right-from-bracket" />
+                            <span>Log out</span>
+                        </button>
+                    </div>
+                </Transition>
             </div>
         </div>
     </div>
@@ -298,6 +343,78 @@ const navLinks = [
                 @include mixins.focus-ring(colors.$bg-card, colors.$status-error);
             }
         }
+
+        .popover {
+            position: absolute;
+            bottom: 100%;
+            left: 1rem;
+            right: 1rem;
+            background: colors.$bg-card;
+            border: variables.$border-light;
+            border-radius: variables.$radius;
+            box-shadow: variables.$shadow-lg;
+            padding: 0.5rem;
+            z-index: 100;
+
+            .popover-header {
+                padding: 0.85rem 0.9rem 0.75rem;
+
+                .popover-name {
+                    font-size: 0.92rem;
+                    font-weight: 600;
+                    color: colors.$text-primary;
+                    margin-bottom: 0.2rem;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+
+                .popover-email {
+                    font-size: 0.78rem;
+                    color: colors.$text-secondary;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                }
+            }
+
+            .popover-divider {
+                border: none;
+                border-top: variables.$border-light;
+                margin: 0.35rem 0;
+            }
+
+            .popover-logout {
+                @include mixins.flex-center;
+                justify-content: flex-start;
+                gap: 0.75rem;
+                width: 100%;
+                padding: 0.75rem 0.9rem;
+                background: transparent;
+                border: none;
+                border-radius: variables.$radius;
+                color: colors.$text-secondary;
+                font-size: 0.88rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: variables.$transition-smooth;
+
+                i {
+                    font-size: 0.9rem;
+                    width: 1rem;
+                    text-align: center;
+                }
+
+                &:hover {
+                    color: colors.$status-error;
+                    background: functions.alpha(colors.$status-error, 0.08);
+                }
+
+                &:focus {
+                    @include mixins.focus-ring(colors.$bg-card, colors.$status-error);
+                }
+            }
+        }
     }
 
     &.collapsed {
@@ -324,5 +441,16 @@ const navLinks = [
             }
         }
     }
+}
+
+.popover-enter-active,
+.popover-leave-active {
+    transition: all 0.18s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.popover-enter-from,
+.popover-leave-to {
+    opacity: 0;
+    transform: translateY(6px);
 }
 </style>
