@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { useRouter } from "vue-router";
 
@@ -41,6 +41,20 @@ const handleClickOutside = (e) => {
     }
 };
 
+const handleEscape = (e) => {
+    if (e.key === "Escape" && popoverOpen.value) {
+        closePopover();
+        profileTrigger.value?.focus();
+    }
+};
+
+const handlePopoverFocusOut = (e) => {
+    const nextFocus = e.relatedTarget;
+
+    if (!nextFocus || (!nextFocus.closest(".popover") && !nextFocus.closest(".profile-info"))) {
+        closePopover();
+    }
+};
 
 const handleLogout = () => {
     closePopover();
@@ -48,11 +62,25 @@ const handleLogout = () => {
     router.push("/login");
 };
 
+watch(
+    popoverOpen,
+    (isOpen) => {
+        if (isOpen) popoverLogoutRef.value?.focus();
+    },
+    { flush: "post" }
+);
+
 onMounted(() => {
     const saved = localStorage.getItem("IsCollapsed");
     if (saved !== null) collapsed.value = saved === "true";
     
     document.addEventListener("click", handleClickOutside);
+    document.addEventListener("keydown", handleEscape);
+});
+
+onUnmounted(() => {
+    document.removeEventListener("click", handleClickOutside);
+    document.removeEventListener("keydown", handleEscape);
 });
 
 const navLinks = [
@@ -107,7 +135,7 @@ const navLinks = [
                 </button>
 
                 <Transition name="popover">
-                    <div v-if="popoverOpen" class="popover">
+                    <div v-if="popoverOpen" class="popover" @focusout="handlePopoverFocusOut">
                         <div class="popover-header">
                             <p class="popover-name">{{ user.username }}</p>
                             <p class="popover-email">{{ user.email }}</p>
