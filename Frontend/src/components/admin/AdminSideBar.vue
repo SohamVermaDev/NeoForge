@@ -171,28 +171,33 @@ const navLinks = [
 
     .heading {
         @include mixins.flex-center;
+        justify-content: flex-start;
         height: 5rem;
-        width: 100%;
-        gap: 1rem;
-
-        i {
-            color: colors.$text-primary;
-            font-size: 1.6rem;
-            line-height: 5rem;
-            user-select: none;
-        }
+        padding: 0 1.5rem 0 1.75rem;
+        flex-shrink: 0;
+        transition: variables.$transition-smooth;
 
         button {
             background: none;
-            height: 74px;
             border: none;
             cursor: pointer;
-            color: colors.$text-primary;
+            color: colors.$text-secondary;
+            font-size: 1.35rem;
+            margin-left: auto;
+            padding: 0.5rem;
+            border-radius: variables.$radius;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             transition: variables.$transition-smooth;
+
+            &:hover {
+                color: colors.$text-primary;
+                background: functions.alpha(colors.$accent, 0.08);
+            }
 
             &:focus-visible {
                 @include mixins.focus-ring;
-                background: functions.alpha(colors.$accent, 0.08);
             }
         }
     }
@@ -447,6 +452,11 @@ const navLinks = [
 
     &.collapsed {
         width: 5rem;
+
+        .heading {
+            justify-content: center;
+            padding: 0 1.32rem;
+        }
 
         .nav-links {
             padding: 0 0.75rem;
