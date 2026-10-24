@@ -18,7 +18,7 @@ router.get("/", async (_req, res) => {
 
             return res.status(200).json({ formattedGames });
         } else {
-            return res.status(204).json({ code: "no_games_found" });
+            return res.status(200).json({ formattedGames: [] });
         }
     } catch (err) {
         console.error(err);
