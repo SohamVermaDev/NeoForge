@@ -37,6 +37,7 @@ const cors = require("cors");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const authRoutes = require("./routes/auth");
+const gameRoutes = require("./routes/games");
 
 const { testConnection } = require("./db");
 
@@ -62,7 +63,7 @@ app.use(
 );
 
 app.use("/auth", limiter, authRoutes);
-
+app.use("/api/games", gameRoutes);
 app.get("/", (_req, res) => {
     res.send("<h1>CAN BE /GET!</h1>");
 });
