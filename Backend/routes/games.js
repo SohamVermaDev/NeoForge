@@ -9,7 +9,14 @@ router.get("/", async (_req, res) => {
         );
 
         if (games.length > 0) {
-            return res.status(200).json({ games });
+            const formattedGames = games.map((game) => ({
+                ...game,
+                price: parseFloat(game.price),
+                rating: parseFloat(game.rating),
+                platforms: JSON.parse(game.platforms || "[]"),
+            }));
+
+            return res.status(200).json({ formattedGames });
         } else {
             return res.status(204).json({ code: "no_games_found" });
         }
