@@ -8,18 +8,14 @@ router.get("/", async (_req, res) => {
             "SELECT * FROM games WHERE deleted_at IS NULL"
         );
 
-        if (games.length > 0) {
-            const formattedGames = games.map((game) => ({
-                ...game,
-                price: parseFloat(game.price),
-                rating: parseFloat(game.rating),
-                platforms: JSON.parse(game.platforms || "[]"),
-            }));
+        const formattedGames = games.map((game) => ({
+            ...game,
+            price: parseFloat(game.price),
+            rating: parseFloat(game.rating),
+            platforms: JSON.parse(game.platforms || "[]"),
+        }));
 
-            return res.status(200).json({ formattedGames });
-        } else {
-            return res.status(200).json({ formattedGames: [] });
-        }
+        return res.status(200).json({ formattedGames });
     } catch (err) {
         console.error(err);
         return res.status(500).json({ code: "failed_to_fetch_games" });
