@@ -73,7 +73,7 @@ watch(
 onMounted(() => {
     const saved = localStorage.getItem("IsCollapsed");
     if (saved !== null) collapsed.value = saved === "true";
-    
+
     document.addEventListener("click", handleClickOutside);
     document.addEventListener("keydown", handleEscape);
 });
@@ -111,7 +111,7 @@ const navLinks = [
                 </router-link>
             </li>
         </ul>
-        
+
         <div class="bottom-block">
             <ul class="nav-links">
                 <li class="list-item">
