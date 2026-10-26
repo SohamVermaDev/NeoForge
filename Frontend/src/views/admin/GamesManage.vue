@@ -1,108 +1,11 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { fetchGamesRequest } from "@/services/gameService";
 
-const games = ref([
-    {
-        id: 1,
-        title: "Cyberpunk 2077",
-        developer: "CD Projekt Red",
-        genre: "RPG",
-        price: 29.99,
-        platforms: ["pc", "xsx", "nsw"],
-        rating: 9.4,
-        stock: 257,
-    },
-    {
-        id: 2,
-        title: "Hollow Knight",
-        developer: "Team17",
-        genre: "Metroidvania",
-        price: 14.99,
-        platforms: ["pc", "xsx", "nsw", "ps4"],
-        rating: 9.2,
-        stock: 150,
-    },
-    {
-        id: 3,
-        title: "Elden Ring",
-        developer: "FromSoftware",
-        genre: "Action RPG",
-        price: 59.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 9.7,
-        stock: 328,
-    },
-    {
-        id: 4,
-        title: "Stardew Valley",
-        developer: "ConcernedApe",
-        genre: "Simulation",
-        price: 14.99,
-        platforms: ["pc", "ps4", "nsw", "xsx"],
-        rating: 9.0,
-        stock: 72,
-    },
-    {
-        id: 5,
-        title: "The Last of Us Part II",
-        developer: "Naughty Dog",
-        genre: "Action Adventure",
-        price: 39.99,
-        platforms: ["ps5", "ps4"],
-        rating: 8.8,
-        stock: 41,
-    },
-    {
-        id: 6,
-        title: "Dead Space",
-        developer: "Motive Studio",
-        genre: "Survival Horror",
-        price: 49.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 8.6,
-        stock: 18,
-    },
-    {
-        id: 7,
-        title: "Diablo IV",
-        developer: "Blizzard Entertainment",
-        genre: "Action RPG",
-        price: 69.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 7.4,
-        stock: 0,
-    },
-    {
-        id: 8,
-        title: "Sonic Frontiers",
-        developer: "Sonic Team",
-        genre: "Platformer",
-        price: 39.99,
-        platforms: ["pc", "ps5", "nsw"],
-        rating: 6.8,
-        stock: 12,
-    },
-    {
-        id: 9,
-        title: "Marvel's Avengers",
-        developer: "Crystal Dynamics",
-        genre: "Action RPG",
-        price: 19.99,
-        platforms: ["pc", "ps5", "ps4", "xsx"],
-        rating: 5.6,
-        stock: 0,
-    },
-    {
-        id: 10,
-        title: "The Ascent",
-        developer: "Neon Giant",
-        genre: "Cyberpunk Shooter",
-        price: 24.99,
-        platforms: ["pc", "xsx", "ps5"],
-        rating: 7.9,
-        stock: 9,
-    },
-]);
+const authStore = useAuthStore();
+
+const games = ref([]);
 
 const searchTerm = ref("");
 const openDropdown = ref(null);
@@ -380,7 +283,13 @@ const dropdownConfigs = [
     },
 ];
 
-onMounted(() => {
+onMounted(async () => {
+    try {
+        games.value = await fetchGamesRequest(authStore.token);
+    } catch (error) {
+        console.error(error);
+    }
+
     document.addEventListener("click", handleClickOutside);
 
     const savedSearchTerm = localStorage.getItem("savedSearchTerm");
