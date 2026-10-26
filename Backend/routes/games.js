@@ -2,7 +2,9 @@ const express = require("express");
 const { db } = require("../db");
 const router = express.Router();
 
-router.get("/", async (_req, res) => {
+const validateAdminToken = require("../middleware/authTokenValidation");
+
+router.get("/", validateAdminToken, async (_req, res) => {
     try {
         const [games] = await db.query(
             "SELECT * FROM games WHERE deleted_at IS NULL"
