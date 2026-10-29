@@ -6,6 +6,7 @@ import { fetchGamesRequest } from "@/services/gameService";
 const authStore = useAuthStore();
 
 const games = ref([]);
+const isLoading = ref(true);
 
 const searchTerm = ref("");
 const openDropdown = ref(null);
@@ -284,10 +285,13 @@ const dropdownConfigs = [
 ];
 
 onMounted(async () => {
+    isLoading.value = true;
     try {
         games.value = await fetchGamesRequest(authStore.token);
     } catch (error) {
         console.error(error);
+    } finally {
+        isLoading.value = false;
     }
 
     document.addEventListener("click", handleClickOutside);
@@ -473,6 +477,34 @@ onUnmounted(() => {
                         </div>
                     </td>
                 </tr>
+                <template v-if="isLoading">
+                    <tr v-for="n in perPage" :key="`skeleton-${n}`" class="skeleton-row">
+                        <td><div class="skeleton skeleton-sm" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-lg" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-md" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-md" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-sm" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td>
+                            <div class="skeleton-flex-platforms">
+                                <div class="skeleton skeleton-chip" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-chip" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="skeleton-rating">
+                                <div class="skeleton skeleton-rating-text" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-bar" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                        <td><div class="skeleton skeleton-badge" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td>
+                            <div class="skeleton-flex">
+                                <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
             </tbody>
         </table>
         <div class="table-footer">
@@ -1108,6 +1140,95 @@ onUnmounted(() => {
                     }
                 }
 
+                &.skeleton-row {
+                    td {
+                        padding: 1rem 1.25rem;
+
+                        .skeleton {
+                            height: 0.85rem;
+                            background: linear-gradient(
+                                90deg,
+                                colors.$gray-600 0%,
+                                functions.alpha(colors.$gray-200, 0.15) 50%,
+                                colors.$gray-600 100%
+                            );
+                            background-size: 200% 100%;
+                            animation: skeleton-shimmer 1.4s ease-in-out infinite;
+                            border-radius: 4px;
+
+                            &.skeleton-sm {
+                                width: 3rem;
+                            }
+
+                            &.skeleton-md {
+                                width: 6rem;
+                            }
+
+                            &.skeleton-lg {
+                                width: 10rem;
+                            }
+
+                            &.skeleton-chip {
+                                width: 2.25rem;
+                                height: 1.5rem;
+                                border-radius: 0.25rem;
+                            }
+
+                            &.skeleton-badge {
+                                width: 4.5rem;
+                                height: 1.5rem;
+                                border-radius: variables.$radius-lg;
+                            }
+
+                            &.skeleton-btn {
+                                width: 3rem;
+                                height: 1.75rem;
+                                border-radius: 6px;
+
+                                &:last-child {
+                                    width: 4rem;
+                                }
+                            }
+
+                            &.skeleton-rating-text {
+                                width: 3rem;
+                            }
+
+                            &.skeleton-bar {
+                                flex: 1;
+                                min-width: 5rem;
+                                height: 0.35rem;
+                                border-radius: variables.$radius;
+                            }
+
+                            @media (prefers-reduced-motion: reduce) {
+                                animation: none;
+                                background: colors.$gray-600;
+                            }
+                        }
+
+                        .skeleton-flex,
+                        .skeleton-flex-platforms {
+                            display: flex;
+                        }
+
+                        .skeleton-flex {
+                            gap: 0.5rem;
+                        }
+
+                        .skeleton-flex-platforms {
+                            gap: 0.4rem;
+                        }
+
+                        .skeleton-rating {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.6rem;
+                            width: 100%;
+                        }
+                    }
+                }
+
                 &:hover {
                     background: functions.alpha(colors.$accent, 0.05);
                 }
@@ -1407,6 +1528,16 @@ onUnmounted(() => {
                 }
             }
         }
+    }
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
     }
 }
 </style>
