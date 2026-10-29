@@ -437,46 +437,6 @@ onUnmounted(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="game in paginatedGames" :key="game.id">
-                    <td>{{ game.id }}</td>
-                    <td>{{ game.title }}</td>
-                    <td>{{ game.developer }}</td>
-                    <td>{{ game.genre }}</td>
-                    <td>${{ game.price }}</td>
-                    <td>
-                        <div class="platforms">
-                            <span v-for="platform in game.platforms" :class="platform" class="platform">
-                                {{ platform.toUpperCase() }}
-                            </span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="rating-container">
-                            <div class="rating">
-                                <span class="rating-value">{{ game.rating }}&nbsp; </span>
-                                <span class="rating-max">/ 10</span>
-                            </div>
-                            <div class="progress-bar">
-                                <div
-                                    :class="getRatingClass(game.rating)"
-                                    :style="{ width: `${(game.rating / 10) * 100}%` }"
-                                    class="progress-fill"
-                                ></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
-                            {{ statusMap[getStockStatus(game.stock)] }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
                 <template v-if="isLoading">
                     <tr v-for="n in perPage" :key="`skeleton-${n}`" class="skeleton-row">
                         <td><div class="skeleton skeleton-sm" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
@@ -501,6 +461,48 @@ onUnmounted(() => {
                             <div class="skeleton-flex">
                                 <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
                                 <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr v-for="game in paginatedGames" :key="game.id">
+                        <td>{{ game.id }}</td>
+                        <td>{{ game.title }}</td>
+                        <td>{{ game.developer }}</td>
+                        <td>{{ game.genre }}</td>
+                        <td>${{ game.price }}</td>
+                        <td>
+                            <div class="platforms">
+                                <span v-for="platform in game.platforms" :class="platform" class="platform">
+                                    {{ platform.toUpperCase() }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <div class="rating">
+                                    <span class="rating-value">{{ game.rating }}&nbsp; </span>
+                                    <span class="rating-max">/ 10</span>
+                                </div>
+                                <div class="progress-bar">
+                                    <div
+                                        :class="getRatingClass(game.rating)"
+                                        :style="{ width: `${(game.rating / 10) * 100}%` }"
+                                        class="progress-fill"
+                                    ></div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
+                                {{ statusMap[getStockStatus(game.stock)] }}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn delete">Delete</button>
                             </div>
                         </td>
                     </tr>
