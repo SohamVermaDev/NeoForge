@@ -23,7 +23,10 @@ const perPageOptions = [5, 10, 15, 20];
 
 const totalItems = computed(() => sortedGames.value.length);
 const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value));
-const rangeStart = computed(() => (currentPage.value - 1) * perPage.value + 1);
+const rangeStart = computed(() => {
+    if (totalItems.value === 0) return 0;
+    return (currentPage.value - 1) * perPage.value + 1;
+});
 const rangeEnd = computed(() => Math.min(currentPage.value * perPage.value, totalItems.value));
 
 const setPerPage = (value) => {
@@ -183,6 +186,12 @@ const paginatedGames = computed(() => {
     const start = (currentPage.value - 1) * perPage.value;
     const end = start + perPage.value;
     return sortedGames.value.slice(start, end);
+});
+
+watch(totalItems, () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = Math.max(1, totalPages.value);
+    }
 });
 
 const getRatingClass = (rating) => {
@@ -542,10 +551,10 @@ onUnmounted(() => {
                     <span>per page</span>
                 </div>
                 <div class="page-controls">
-                    <button class="page-btn" @click="currentPage--" :disabled="currentPage === 1">
+                    <button class="page-btn" @click="currentPage--" :disabled="currentPage <= 1">
                         <i class="fa-solid fa-caret-left"></i>
                     </button>
-                    <button class="page-btn" @click="currentPage++" :disabled="currentPage === totalPages">
+                    <button class="page-btn" @click="currentPage++" :disabled="currentPage >= totalPages">
                         <i class="fa-solid fa-caret-right"></i>
                     </button>
                 </div>
