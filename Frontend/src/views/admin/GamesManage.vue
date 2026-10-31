@@ -785,6 +785,10 @@ onUnmounted(() => {
                         background: colors.$accent-hover;
                         transform: translateY(-1px);
                     }
+
+                    &:active {
+                        transform: translateY(0);
+                    }
                 }
             }
         }
