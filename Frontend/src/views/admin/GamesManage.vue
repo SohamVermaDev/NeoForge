@@ -151,6 +151,12 @@ const selectOption = (filterType, value) => {
     openDropdown.value = null;
 };
 
+const searchOnlyResults = computed(() => {
+    const term = searchTerm.value.trim().toLowerCase();
+    if (!term) return games.value;
+    return games.value.filter((game) => game.title.toLowerCase().includes(term));
+});
+
 const filteredGames = computed(() => {
     return games.value
         .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
@@ -198,6 +204,59 @@ const paginatedGames = computed(() => {
     const end = start + perPage.value;
     return sortedGames.value.slice(start, end);
 });
+
+const emptyState = computed(() => {
+    const search = searchTerm.value?.trim();
+    const hasSearch = !!search;
+    const hasFilters = selectedPlatform.value.length > 0 || selectedRating.value !== "all" || selectedStatus.value !== "all";
+
+    if (hasSearch && searchOnlyResults.value.length === 0) {
+        if (hasFilters) {
+            return {
+                icon: "fa-solid fa-magnifying-glass",
+                heading: `No games match "${search}"`,
+                subtext: "Try checking your spelling, or reset everything to see all games.",
+                buttonText: "Reset All Filters",
+                action: "all",
+            };
+        }
+        return {
+            icon: "fa-solid fa-magnifying-glass",
+            heading: `No games match "${search}"`,
+            subtext: "Try checking your spelling or using a different search term.",
+            buttonText: "Clear Search",
+            action: "search",
+        };
+    }
+
+    if (hasSearch && hasFilters) {
+        return {
+            icon: "fa-solid fa-filter",
+            heading: `No games match "${search}" with these filters`,
+            subtext: "Try removing a filter or two to widen your results.",
+            buttonText: "Clear Filters",
+            action: "filters",
+        };
+    }
+
+    return {
+        icon: "fa-solid fa-filter",
+        heading: "No games match these filters",
+        subtext: "Try removing a filter or two to widen your results.",
+        buttonText: "Clear Filters",
+        action: "filters",
+    };
+});
+
+const handleEmptyAction = () => {
+    if (emptyState.value.action === "search") {
+        clearSearch();
+    } else if (emptyState.value.action === "filters") {
+        clearFilters();
+    } else {
+        resetFilters();
+    }
+};
 
 watch(totalItems, () => {
     if (currentPage.value > totalPages.value) {
@@ -481,6 +540,22 @@ onUnmounted(() => {
                             <div class="skeleton-flex">
                                 <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
                                 <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else-if="sortedGames.length === 0">
+                    <tr class="state-row">
+                        <td colspan="9">
+                            <div class="state-content">
+                                <div class="icon-wrapper">
+                                    <i :class="emptyState.icon"></i>
+                                </div>
+                                <h3>{{ emptyState.heading }}</h3>
+                                <p>{{ emptyState.subtext }}</p>
+                                <button class="empty-btn" @click="handleEmptyAction">
+                                    {{ emptyState.buttonText }}
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -1251,7 +1326,80 @@ onUnmounted(() => {
                     }
                 }
 
-                &:hover {
+                &.state-row {
+                    td {
+                        padding: 3rem 1rem;
+                        text-align: center;
+
+                        .state-content {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 1rem;
+                            max-width: 30rem;
+                            margin: 0 auto;
+
+                            .icon-wrapper {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                width: 3.5rem;
+                                height: 3.5rem;
+                                background: functions.alpha(colors.$accent, 0.1);
+                                border-radius: 50%;
+                                margin-bottom: 0.5rem;
+
+                                i {
+                                    font-size: 1.5rem;
+                                    color: colors.$accent;
+                                }
+                            }
+
+                            h3 {
+                                font-size: 1.2rem;
+                                font-weight: 600;
+                                color: colors.$text-primary;
+                                margin: 0;
+                            }
+
+                            p {
+                                font-size: 0.9rem;
+                                color: colors.$text-secondary;
+                                line-height: 1.5;
+                                margin: 0 0 0.5rem 0;
+                            }
+
+                            .empty-btn {
+                                background: colors.$accent;
+                                color: white;
+                                border: none;
+                                border-radius: variables.$radius;
+                                padding: 0.6rem 1.5rem;
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: variables.$transition-smooth;
+
+                                &:hover {
+                                    background: colors.$accent-hover;
+                                    transform: translateY(-1px);
+                                    box-shadow: 0 4px 12px functions.alpha(colors.$accent, 0.3);
+                                }
+
+                                &:active {
+                                    transform: translateY(0);
+                                }
+
+                                &:focus-visible {
+                                    @include mixins.focus-ring;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &:not(.state-row):hover {
                     background: functions.alpha(colors.$accent, 0.05);
                 }
             }
