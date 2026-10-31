@@ -51,8 +51,19 @@ const handleSort = (column) => {
     }
 };
 
+const clearSearch = () => {
+    searchTerm.value = "";
+};
+
+const clearFilters = () => {
+    selectedPlatform.value = [];
+    selectedRating.value = "all";
+    selectedStatus.value = "all";
+};
+
 const resetFilters = () => {
-    ((searchTerm.value = ""), (selectedPlatform.value = []), (selectedRating.value = "all"), (selectedStatus.value = "all"));
+    clearSearch();
+    clearFilters();
 };
 
 watch(searchTerm, () => {
@@ -356,7 +367,7 @@ onUnmounted(() => {
         <div class="table-controls">
             <div class="search-wrapper">
                 <input v-model="searchTerm" type="text" placeholder="Search games..." class="search-input" />
-                <button class="reset" @click="resetFilters()">Reset All Filters</button>
+                <button class="reset" @click="resetFilters">Reset All Filters</button>
                 <div class="add-game-container">
                     <button class="add-game-btn">+ Add New Game</button>
                 </div>
