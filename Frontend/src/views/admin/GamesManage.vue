@@ -2,10 +2,12 @@
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "@/stores/auth";
 import { fetchGamesRequest } from "@/services/gameService";
+import getGameErrorMessage from "@/constants/gamesErrors";
 
 const authStore = useAuthStore();
 
 const games = ref([]);
+const fetchError = ref(null);
 const isLoading = ref(true);
 
 const searchTerm = ref("");
@@ -205,7 +207,17 @@ const paginatedGames = computed(() => {
     return sortedGames.value.slice(start, end);
 });
 
-const emptyState = computed(() => {
+const stateContent = computed(() => {
+    if (fetchError.value) {
+        return {
+            icon: fetchError.value.icon,
+            heading: fetchError.value.heading,
+            subtext: fetchError.value.subtext,
+            buttonText: "Try Again",
+            action: "retry",
+        };
+    }
+
     const search = searchTerm.value?.trim();
     const hasSearch = !!search;
     const hasFilters = selectedPlatform.value.length > 0 || selectedRating.value !== "all" || selectedStatus.value !== "all";
@@ -249,9 +261,11 @@ const emptyState = computed(() => {
 });
 
 const handleEmptyAction = () => {
-    if (emptyState.value.action === "search") {
+    if (stateContent.value.action === "retry") {
+        fetchGames();
+    } else if (stateContent.value.action === "search") {
         clearSearch();
-    } else if (emptyState.value.action === "filters") {
+    } else if (stateContent.value.action === "filters") {
         clearFilters();
     } else {
         resetFilters();
@@ -363,15 +377,26 @@ const dropdownConfigs = [
     },
 ];
 
-onMounted(async () => {
+const fetchGames = async () => {
     isLoading.value = true;
+    fetchError.value = null;
+
     try {
         games.value = await fetchGamesRequest(authStore.token);
     } catch (error) {
-        console.error(error);
+        fetchError.value = !navigator.onLine ? getGameErrorMessage("offline") : getGameErrorMessage(error.message);
     } finally {
         isLoading.value = false;
     }
+};
+
+const handleOnline = () => {
+    if (fetchError.value) fetchGames();
+};
+
+onMounted(async () => {
+    fetchGames();
+    window.addEventListener("online", handleOnline);
 
     document.addEventListener("click", handleClickOutside);
 
@@ -418,6 +443,7 @@ onMounted(async () => {
 
 onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
+    window.removeEventListener("online", handleOnline);
 });
 </script>
 
@@ -544,17 +570,17 @@ onUnmounted(() => {
                         </td>
                     </tr>
                 </template>
-                <template v-else-if="sortedGames.length === 0">
-                    <tr class="state-row">
+                <template v-else-if="fetchError || sortedGames.length === 0">
+                    <tr class="state-row" :class="{ 'error-state': fetchError }">
                         <td colspan="9">
                             <div class="state-content">
                                 <div class="icon-wrapper">
-                                    <i :class="emptyState.icon"></i>
+                                    <i :class="stateContent.icon"></i>
                                 </div>
-                                <h3>{{ emptyState.heading }}</h3>
-                                <p>{{ emptyState.subtext }}</p>
+                                <h3>{{ stateContent.heading }}</h3>
+                                <p>{{ stateContent.subtext }}</p>
                                 <button class="empty-btn" @click="handleEmptyAction">
-                                    {{ emptyState.buttonText }}
+                                    {{ stateContent.buttonText }}
                                 </button>
                             </div>
                         </td>
@@ -1397,6 +1423,28 @@ onUnmounted(() => {
 
                                 &:focus-visible {
                                     @include mixins.focus-ring;
+                                }
+                            }
+                        }
+                    }
+
+                    &.error-state {
+                        .state-content {
+                            .icon-wrapper {
+                                background: functions.alpha(colors.$status-error, 0.1);
+                                border-color: functions.alpha(colors.$status-error, 0.2);
+
+                                i {
+                                    color: colors.$status-error;
+                                }
+                            }
+
+                            .empty-btn {
+                                background: colors.$status-error;
+
+                                &:hover {
+                                    background: #dc2626; // A darker red for hover
+                                    box-shadow: 0 4px 12px functions.alpha(colors.$status-error, 0.3);
                                 }
                             }
                         }
