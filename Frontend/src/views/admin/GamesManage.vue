@@ -161,7 +161,7 @@ const searchOnlyResults = computed(() => {
 
 const filteredGames = computed(() => {
     return games.value
-        .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        .filter((game) => game.title.toLowerCase().includes(searchTerm.value.trim().toLowerCase()))
         .filter((game) => {
             if (selectedPlatform.value.length === 0) return true;
             return game.platforms.some((p) => selectedPlatform.value.includes(p));
