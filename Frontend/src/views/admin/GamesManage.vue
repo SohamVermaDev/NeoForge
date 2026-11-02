@@ -603,7 +603,7 @@ onUnmounted(() => {
                         <td>
                             <div class="rating-container">
                                 <div class="rating">
-                                    <span class="rating-value">{{ game.rating }}&nbsp; </span>
+                                    <span class="rating-value">{{ game.rating.toFixed(1) }}&nbsp; </span>
                                     <span class="rating-max">/ 10</span>
                                 </div>
                                 <div class="progress-bar">
