@@ -168,6 +168,7 @@ const filteredGames = computed(() => {
         })
         .filter((game) => {
             if (selectedRating.value === "all") return true;
+            if (game.rating === null) return false;
             if (selectedRating.value === "high") return game.rating >= 8.0;
             if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
             if (selectedRating.value === "low") return game.rating < 6.0;
@@ -188,6 +189,11 @@ const sortedGames = computed(() => {
         sorted.sort((a, b) => {
             let valA = a[sortBy.value];
             let valB = b[sortBy.value];
+
+            if (sortBy.value === "rating") {
+                valA = valA ?? -1;
+                valB = valB ?? -1;
+            }
 
             if (typeof valA === "string") {
                 valA = valA.toLowerCase();
@@ -602,17 +608,27 @@ onUnmounted(() => {
                         </td>
                         <td>
                             <div class="rating-container">
-                                <div class="rating">
-                                    <span class="rating-value">{{ game.rating.toFixed(1) }}&nbsp; </span>
-                                    <span class="rating-max">/ 10</span>
-                                </div>
-                                <div class="progress-bar">
-                                    <div
-                                        :class="getRatingClass(game.rating)"
-                                        :style="{ width: `${(game.rating / 10) * 100}%` }"
-                                        class="progress-fill"
-                                    ></div>
-                                </div>
+                                <template v-if="game.rating !== null">
+                                    <div class="rating">
+                                        <span class="rating-value">{{ game.rating.toFixed(1) }}&nbsp; </span>
+                                        <span class="rating-max">/ 10</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div
+                                            :class="getRatingClass(game.rating)"
+                                            :style="{ width: `${(game.rating / 10) * 100}%` }"
+                                            class="progress-fill"
+                                        ></div>
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <div class="rating">
+                                        <span class="rating-unrated">&mdash; &nbsp;</span>
+                                        <span class="rating-max">/ 10</span>
+                                    </div>
+                                    <div class="progress-bar"></div>
+                                </template>
                             </div>
                         </td>
                         <td>
@@ -1116,6 +1132,14 @@ onUnmounted(() => {
                             .rating-max {
                                 font-size: 0.7rem;
                                 color: colors.$text-secondary;
+                                user-select: none;
+                            }
+
+                            .rating-unrated {
+                                padding: 0 0.16rem;
+                                font-weight: 600;
+                                color: colors.$text-secondary;
+                                opacity: 0.6;
                                 user-select: none;
                             }
                         }
