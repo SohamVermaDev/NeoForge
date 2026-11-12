@@ -1,108 +1,14 @@
 <script setup>
 import { ref, computed, watch, onMounted, onUnmounted } from "vue";
+import { useAuthStore } from "@/stores/auth";
+import { fetchGamesRequest } from "@/services/gameService";
+import getGameErrorMessage from "@/constants/gamesErrors";
 
-const games = ref([
-    {
-        id: 1,
-        title: "Cyberpunk 2077",
-        developer: "CD Projekt Red",
-        genre: "RPG",
-        price: 29.99,
-        platforms: ["pc", "xsx", "nsw"],
-        rating: 9.4,
-        stock: 257,
-    },
-    {
-        id: 2,
-        title: "Hollow Knight",
-        developer: "Team17",
-        genre: "Metroidvania",
-        price: 14.99,
-        platforms: ["pc", "xsx", "nsw", "ps4"],
-        rating: 9.2,
-        stock: 150,
-    },
-    {
-        id: 3,
-        title: "Elden Ring",
-        developer: "FromSoftware",
-        genre: "Action RPG",
-        price: 59.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 9.7,
-        stock: 328,
-    },
-    {
-        id: 4,
-        title: "Stardew Valley",
-        developer: "ConcernedApe",
-        genre: "Simulation",
-        price: 14.99,
-        platforms: ["pc", "ps4", "nsw", "xsx"],
-        rating: 9.0,
-        stock: 72,
-    },
-    {
-        id: 5,
-        title: "The Last of Us Part II",
-        developer: "Naughty Dog",
-        genre: "Action Adventure",
-        price: 39.99,
-        platforms: ["ps5", "ps4"],
-        rating: 8.8,
-        stock: 41,
-    },
-    {
-        id: 6,
-        title: "Dead Space",
-        developer: "Motive Studio",
-        genre: "Survival Horror",
-        price: 49.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 8.6,
-        stock: 18,
-    },
-    {
-        id: 7,
-        title: "Diablo IV",
-        developer: "Blizzard Entertainment",
-        genre: "Action RPG",
-        price: 69.99,
-        platforms: ["pc", "ps5", "xsx"],
-        rating: 7.4,
-        stock: 0,
-    },
-    {
-        id: 8,
-        title: "Sonic Frontiers",
-        developer: "Sonic Team",
-        genre: "Platformer",
-        price: 39.99,
-        platforms: ["pc", "ps5", "nsw"],
-        rating: 6.8,
-        stock: 12,
-    },
-    {
-        id: 9,
-        title: "Marvel's Avengers",
-        developer: "Crystal Dynamics",
-        genre: "Action RPG",
-        price: 19.99,
-        platforms: ["pc", "ps5", "ps4", "xsx"],
-        rating: 5.6,
-        stock: 0,
-    },
-    {
-        id: 10,
-        title: "The Ascent",
-        developer: "Neon Giant",
-        genre: "Cyberpunk Shooter",
-        price: 24.99,
-        platforms: ["pc", "xsx", "ps5"],
-        rating: 7.9,
-        stock: 9,
-    },
-]);
+const authStore = useAuthStore();
+
+const games = ref([]);
+const fetchError = ref(null);
+const isLoading = ref(true);
 
 const searchTerm = ref("");
 const openDropdown = ref(null);
@@ -119,7 +25,10 @@ const perPageOptions = [5, 10, 15, 20];
 
 const totalItems = computed(() => sortedGames.value.length);
 const totalPages = computed(() => Math.ceil(totalItems.value / perPage.value));
-const rangeStart = computed(() => (currentPage.value - 1) * perPage.value + 1);
+const rangeStart = computed(() => {
+    if (totalItems.value === 0) return 0;
+    return (currentPage.value - 1) * perPage.value + 1;
+});
 const rangeEnd = computed(() => Math.min(currentPage.value * perPage.value, totalItems.value));
 
 const setPerPage = (value) => {
@@ -144,8 +53,19 @@ const handleSort = (column) => {
     }
 };
 
+const clearSearch = () => {
+    searchTerm.value = "";
+};
+
+const clearFilters = () => {
+    selectedPlatform.value = [];
+    selectedRating.value = "all";
+    selectedStatus.value = "all";
+};
+
 const resetFilters = () => {
-    ((searchTerm.value = ""), (selectedPlatform.value = []), (selectedRating.value = "all"), (selectedStatus.value = "all"));
+    clearSearch();
+    clearFilters();
 };
 
 watch(searchTerm, () => {
@@ -233,15 +153,22 @@ const selectOption = (filterType, value) => {
     openDropdown.value = null;
 };
 
+const searchOnlyResults = computed(() => {
+    const term = searchTerm.value.trim().toLowerCase();
+    if (!term) return games.value;
+    return games.value.filter((game) => game.title.toLowerCase().includes(term));
+});
+
 const filteredGames = computed(() => {
     return games.value
-        .filter((game) => game.title.toLowerCase().includes(searchTerm.value.toLowerCase()))
+        .filter((game) => game.title.toLowerCase().includes(searchTerm.value.trim().toLowerCase()))
         .filter((game) => {
             if (selectedPlatform.value.length === 0) return true;
             return game.platforms.some((p) => selectedPlatform.value.includes(p));
         })
         .filter((game) => {
             if (selectedRating.value === "all") return true;
+            if (game.rating === null) return false;
             if (selectedRating.value === "high") return game.rating >= 8.0;
             if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
             if (selectedRating.value === "low") return game.rating < 6.0;
@@ -263,6 +190,11 @@ const sortedGames = computed(() => {
             let valA = a[sortBy.value];
             let valB = b[sortBy.value];
 
+            if (sortBy.value === "rating") {
+                valA = valA ?? -1;
+                valB = valB ?? -1;
+            }
+
             if (typeof valA === "string") {
                 valA = valA.toLowerCase();
                 valB = valB.toLowerCase();
@@ -279,6 +211,77 @@ const paginatedGames = computed(() => {
     const start = (currentPage.value - 1) * perPage.value;
     const end = start + perPage.value;
     return sortedGames.value.slice(start, end);
+});
+
+const stateContent = computed(() => {
+    if (fetchError.value) {
+        return {
+            icon: fetchError.value.icon,
+            heading: fetchError.value.heading,
+            subtext: fetchError.value.subtext,
+            buttonText: "Try Again",
+            action: "retry",
+        };
+    }
+
+    const search = searchTerm.value?.trim();
+    const hasSearch = !!search;
+    const hasFilters = selectedPlatform.value.length > 0 || selectedRating.value !== "all" || selectedStatus.value !== "all";
+
+    if (hasSearch && searchOnlyResults.value.length === 0) {
+        if (hasFilters) {
+            return {
+                icon: "fa-solid fa-magnifying-glass",
+                heading: `No games match "${search}"`,
+                subtext: "Try checking your spelling, or reset everything to see all games.",
+                buttonText: "Reset All Filters",
+                action: "all",
+            };
+        }
+        return {
+            icon: "fa-solid fa-magnifying-glass",
+            heading: `No games match "${search}"`,
+            subtext: "Try checking your spelling or using a different search term.",
+            buttonText: "Clear Search",
+            action: "search",
+        };
+    }
+
+    if (hasSearch && hasFilters) {
+        return {
+            icon: "fa-solid fa-filter",
+            heading: `No games match "${search}" with these filters`,
+            subtext: "Try removing a filter or two to widen your results.",
+            buttonText: "Clear Filters",
+            action: "filters",
+        };
+    }
+
+    return {
+        icon: "fa-solid fa-filter",
+        heading: "No games match these filters",
+        subtext: "Try removing a filter or two to widen your results.",
+        buttonText: "Clear Filters",
+        action: "filters",
+    };
+});
+
+const handleEmptyAction = () => {
+    if (stateContent.value.action === "retry") {
+        fetchGames();
+    } else if (stateContent.value.action === "search") {
+        clearSearch();
+    } else if (stateContent.value.action === "filters") {
+        clearFilters();
+    } else {
+        resetFilters();
+    }
+};
+
+watch(totalItems, () => {
+    if (currentPage.value > totalPages.value) {
+        currentPage.value = Math.max(1, totalPages.value);
+    }
 });
 
 const getRatingClass = (rating) => {
@@ -380,7 +383,27 @@ const dropdownConfigs = [
     },
 ];
 
-onMounted(() => {
+const fetchGames = async () => {
+    isLoading.value = true;
+    fetchError.value = null;
+
+    try {
+        games.value = await fetchGamesRequest(authStore.token);
+    } catch (error) {
+        fetchError.value = !navigator.onLine ? getGameErrorMessage("offline") : getGameErrorMessage(error.message);
+    } finally {
+        isLoading.value = false;
+    }
+};
+
+const handleOnline = () => {
+    if (fetchError.value) fetchGames();
+};
+
+onMounted(async () => {
+    fetchGames();
+    window.addEventListener("online", handleOnline);
+
     document.addEventListener("click", handleClickOutside);
 
     const savedSearchTerm = localStorage.getItem("savedSearchTerm");
@@ -426,6 +449,7 @@ onMounted(() => {
 
 onUnmounted(() => {
     document.removeEventListener("click", handleClickOutside);
+    window.removeEventListener("online", handleOnline);
 });
 </script>
 
@@ -434,7 +458,7 @@ onUnmounted(() => {
         <div class="table-controls">
             <div class="search-wrapper">
                 <input v-model="searchTerm" type="text" placeholder="Search games..." class="search-input" />
-                <button class="reset" @click="resetFilters()">Reset All Filters</button>
+                <button class="reset" @click="resetFilters">Reset All Filters</button>
                 <div class="add-game-container">
                     <button class="add-game-btn">+ Add New Game</button>
                 </div>
@@ -524,46 +548,102 @@ onUnmounted(() => {
                 </tr>
             </thead>
             <tbody>
-                <tr v-for="game in paginatedGames" :key="game.id">
-                    <td>{{ game.id }}</td>
-                    <td>{{ game.title }}</td>
-                    <td>{{ game.developer }}</td>
-                    <td>{{ game.genre }}</td>
-                    <td>${{ game.price }}</td>
-                    <td>
-                        <div class="platforms">
-                            <span v-for="platform in game.platforms" :class="platform" class="platform">
-                                {{ platform.toUpperCase() }}
+                <template v-if="isLoading">
+                    <tr v-for="n in perPage" :key="`skeleton-${n}`" class="skeleton-row">
+                        <td><div class="skeleton skeleton-sm" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-lg" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-md" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-md" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td><div class="skeleton skeleton-sm" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td>
+                            <div class="skeleton-flex-platforms">
+                                <div class="skeleton skeleton-chip" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-chip" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="skeleton-rating">
+                                <div class="skeleton skeleton-rating-text" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-bar" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                        <td><div class="skeleton skeleton-badge" :style="{ animationDelay: `${n * 80}ms` }"></div></td>
+                        <td>
+                            <div class="skeleton-flex">
+                                <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                                <div class="skeleton skeleton-btn" :style="{ animationDelay: `${n * 80}ms` }"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else-if="fetchError || sortedGames.length === 0">
+                    <tr class="state-row" :class="{ 'error-state': fetchError }">
+                        <td colspan="9">
+                            <div class="state-content">
+                                <div class="icon-wrapper">
+                                    <i :class="stateContent.icon"></i>
+                                </div>
+                                <h3>{{ stateContent.heading }}</h3>
+                                <p>{{ stateContent.subtext }}</p>
+                                <button class="empty-btn" @click="handleEmptyAction">
+                                    {{ stateContent.buttonText }}
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </template>
+                <template v-else>
+                    <tr v-for="game in paginatedGames" :key="game.id">
+                        <td>{{ game.id }}</td>
+                        <td>{{ game.title }}</td>
+                        <td>{{ game.developer }}</td>
+                        <td>{{ game.genre }}</td>
+                        <td>${{ game.price }}</td>
+                        <td>
+                            <div class="platforms">
+                                <span v-for="platform in game.platforms" :class="platform" class="platform">
+                                    {{ platform.toUpperCase() }}
+                                </span>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="rating-container">
+                                <template v-if="game.rating !== null">
+                                    <div class="rating">
+                                        <span class="rating-value">{{ game.rating.toFixed(1) }}&nbsp; </span>
+                                        <span class="rating-max">/ 10</span>
+                                    </div>
+                                    <div class="progress-bar">
+                                        <div
+                                            :class="getRatingClass(game.rating)"
+                                            :style="{ width: `${(game.rating / 10) * 100}%` }"
+                                            class="progress-fill"
+                                        ></div>
+                                    </div>
+                                </template>
+
+                                <template v-else>
+                                    <div class="rating">
+                                        <span class="rating-unrated">&mdash; &nbsp;</span>
+                                        <span class="rating-max">/ 10</span>
+                                    </div>
+                                    <div class="progress-bar"></div>
+                                </template>
+                            </div>
+                        </td>
+                        <td>
+                            <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
+                                {{ statusMap[getStockStatus(game.stock)] }}
                             </span>
-                        </div>
-                    </td>
-                    <td>
-                        <div class="rating-container">
-                            <div class="rating">
-                                <span class="rating-value">{{ game.rating }}&nbsp; </span>
-                                <span class="rating-max">/ 10</span>
+                        </td>
+                        <td>
+                            <div class="actions">
+                                <button class="action-btn edit">Edit</button>
+                                <button class="action-btn delete">Delete</button>
                             </div>
-                            <div class="progress-bar">
-                                <div
-                                    :class="getRatingClass(game.rating)"
-                                    :style="{ width: `${(game.rating / 10) * 100}%` }"
-                                    class="progress-fill"
-                                ></div>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <span :class="getStockStatus(game.stock)" class="status-badge" :stock="game.stock">
-                            {{ statusMap[getStockStatus(game.stock)] }}
-                        </span>
-                    </td>
-                    <td>
-                        <div class="actions">
-                            <button class="action-btn edit">Edit</button>
-                            <button class="action-btn delete">Delete</button>
-                        </div>
-                    </td>
-                </tr>
+                        </td>
+                    </tr>
+                </template>
             </tbody>
         </table>
         <div class="table-footer">
@@ -599,10 +679,10 @@ onUnmounted(() => {
                     <span>per page</span>
                 </div>
                 <div class="page-controls">
-                    <button class="page-btn" @click="currentPage--" :disabled="currentPage === 1">
+                    <button class="page-btn" @click="currentPage--" :disabled="currentPage <= 1">
                         <i class="fa-solid fa-caret-left"></i>
                     </button>
-                    <button class="page-btn" @click="currentPage++" :disabled="currentPage === totalPages">
+                    <button class="page-btn" @click="currentPage++" :disabled="currentPage >= totalPages">
                         <i class="fa-solid fa-caret-right"></i>
                     </button>
                 </div>
@@ -746,6 +826,10 @@ onUnmounted(() => {
                     &:hover {
                         background: colors.$accent-hover;
                         transform: translateY(-1px);
+                    }
+
+                    &:active {
+                        transform: translateY(0);
                     }
                 }
             }
@@ -1050,6 +1134,14 @@ onUnmounted(() => {
                                 color: colors.$text-secondary;
                                 user-select: none;
                             }
+
+                            .rating-unrated {
+                                padding: 0 0.16rem;
+                                font-weight: 600;
+                                color: colors.$text-secondary;
+                                opacity: 0.6;
+                                user-select: none;
+                            }
                         }
 
                         .progress-bar {
@@ -1199,7 +1291,191 @@ onUnmounted(() => {
                     }
                 }
 
-                &:hover {
+                &.skeleton-row {
+                    td {
+                        padding: 1rem 1.25rem;
+
+                        .skeleton {
+                            height: 0.85rem;
+                            background: linear-gradient(
+                                90deg,
+                                colors.$gray-600 0%,
+                                functions.alpha(colors.$gray-200, 0.15) 50%,
+                                colors.$gray-600 100%
+                            );
+                            background-size: 200% 100%;
+                            animation: skeleton-shimmer 1.4s ease-in-out infinite;
+                            border-radius: 4px;
+
+                            &.skeleton-sm {
+                                width: 3rem;
+                            }
+
+                            &.skeleton-md {
+                                width: 6rem;
+                            }
+
+                            &.skeleton-lg {
+                                width: 10rem;
+                            }
+
+                            &.skeleton-chip {
+                                width: 2.25rem;
+                                height: 1.5rem;
+                                border-radius: 0.25rem;
+                            }
+
+                            &.skeleton-badge {
+                                width: 4.5rem;
+                                height: 1.5rem;
+                                border-radius: variables.$radius-lg;
+                            }
+
+                            &.skeleton-btn {
+                                width: 3rem;
+                                height: 1.75rem;
+                                border-radius: 6px;
+
+                                &:last-child {
+                                    width: 4rem;
+                                }
+                            }
+
+                            &.skeleton-rating-text {
+                                width: 3rem;
+                            }
+
+                            &.skeleton-bar {
+                                flex: 1;
+                                min-width: 5rem;
+                                height: 0.35rem;
+                                border-radius: variables.$radius;
+                            }
+
+                            @media (prefers-reduced-motion: reduce) {
+                                animation: none;
+                                background: colors.$gray-600;
+                            }
+                        }
+
+                        .skeleton-flex,
+                        .skeleton-flex-platforms {
+                            display: flex;
+                        }
+
+                        .skeleton-flex {
+                            gap: 0.5rem;
+                        }
+
+                        .skeleton-flex-platforms {
+                            gap: 0.4rem;
+                        }
+
+                        .skeleton-rating {
+                            display: flex;
+                            align-items: center;
+                            gap: 0.6rem;
+                            width: 100%;
+                        }
+                    }
+                }
+
+                &.state-row {
+                    td {
+                        padding: 3rem 1rem;
+                        text-align: center;
+
+                        .state-content {
+                            display: flex;
+                            flex-direction: column;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 1rem;
+                            max-width: 30rem;
+                            margin: 0 auto;
+
+                            .icon-wrapper {
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                width: 3.5rem;
+                                height: 3.5rem;
+                                background: functions.alpha(colors.$accent, 0.1);
+                                border-radius: 50%;
+                                margin-bottom: 0.5rem;
+
+                                i {
+                                    font-size: 1.5rem;
+                                    color: colors.$accent;
+                                }
+                            }
+
+                            h3 {
+                                font-size: 1.2rem;
+                                font-weight: 600;
+                                color: colors.$text-primary;
+                                margin: 0;
+                            }
+
+                            p {
+                                font-size: 0.9rem;
+                                color: colors.$text-secondary;
+                                line-height: 1.5;
+                                margin: 0 0 0.5rem 0;
+                            }
+
+                            .empty-btn {
+                                background: colors.$accent;
+                                color: white;
+                                border: none;
+                                border-radius: variables.$radius;
+                                padding: 0.6rem 1.5rem;
+                                font-size: 0.9rem;
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: variables.$transition-smooth;
+
+                                &:hover {
+                                    background: colors.$accent-hover;
+                                    transform: translateY(-1px);
+                                    box-shadow: 0 4px 12px functions.alpha(colors.$accent, 0.3);
+                                }
+
+                                &:active {
+                                    transform: translateY(0);
+                                }
+
+                                &:focus-visible {
+                                    @include mixins.focus-ring;
+                                }
+                            }
+                        }
+                    }
+
+                    &.error-state {
+                        .state-content {
+                            .icon-wrapper {
+                                background: functions.alpha(colors.$status-error, 0.1);
+                                border-color: functions.alpha(colors.$status-error, 0.2);
+
+                                i {
+                                    color: colors.$status-error;
+                                }
+                            }
+
+                            .empty-btn {
+                                background: colors.$status-error;
+
+                                &:hover {
+                                    background: #dc2626; // A darker red for hover
+                                    box-shadow: 0 4px 12px functions.alpha(colors.$status-error, 0.3);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                &:not(.state-row):hover {
                     background: functions.alpha(colors.$accent, 0.05);
                 }
             }
@@ -1498,6 +1774,16 @@ onUnmounted(() => {
                 }
             }
         }
+    }
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
     }
 }
 </style>
