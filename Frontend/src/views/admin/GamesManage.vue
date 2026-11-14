@@ -168,6 +168,7 @@ const filteredGames = computed(() => {
         })
         .filter((game) => {
             if (selectedRating.value === "all") return true;
+            if (selectedRating.value === "unrated") return game.rating === null;
             if (game.rating === null) return false;
             if (selectedRating.value === "high") return game.rating >= 8.0;
             if (selectedRating.value === "medium") return game.rating >= 6.0 && game.rating < 8.0;
@@ -342,6 +343,7 @@ const dropdownConfigs = [
             { value: "high", label: "High (≥ 8.0)", type: "plain" },
             { value: "medium", label: "Medium (6.0–7.9)", type: "plain" },
             { value: "low", label: "Low (≤ 6.0)", type: "plain" },
+            { value: "unrated", label: "Unrated ( — )", type: "plain" },
         ],
         getDisplayText: (selected) => {
             const map = {
@@ -349,6 +351,7 @@ const dropdownConfigs = [
                 high: "High (≥ 8.0)",
                 medium: "Medium (6.0–7.9)",
                 low: "Low (≤ 6.0)",
+                unrated: "Unrated ( — )",
             };
             return map[selected] || "All Ratings";
         },
